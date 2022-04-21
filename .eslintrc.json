@@ -43,6 +43,7 @@
         "space-before-function-paren": ["error", "never"],
         "no-useless-constructor": ["off"],
         "no-multiple-empty-lines": ["error", { "max": 5, "maxEOF": 1, "maxBOF": 1 }],
+        "dot-notation": "off",
         "indent": ["error", 4, {
             "SwitchCase": 1,
             "VariableDeclarator": 1,
