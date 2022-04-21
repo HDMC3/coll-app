@@ -5,21 +5,23 @@
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <div class="card-body py-8 px-4 sm:px-8">
-                <form action="">
+                <form [formGroup]="loginForm">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Correo</span>
                         </label>
-                        <input type="text" placeholder="correo" class="input input-bordered">
+                        <input formControlName="email" [ngClass]="controlValidationClasses('email')" type="text" placeholder="correo" class="input input-bordered">
+                        <span *ngIf="checkControlInvalid('email')" class="invalid text-xs pt-2">{{emailMessageError}}</span>
                     </div>
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Contraseña</span>
                         </label>
-                        <input type="text" placeholder="contraseña" class="input input-bordered">
+                        <input formControlName="password" [ngClass]="controlValidationClasses('password')" type="password" placeholder="contraseña" class="input input-bordered">
+                        <span *ngIf="checkControlInvalid('password')" class="invalid text-xs pt-2">{{passwordMessageError}}</span>
                     </div>
                     <div class="form-control mt-6">
-                        <button class="btn btn-primary">Entrar</button>
+                        <button type="submit" class="btn btn-primary">Entrar</button>
                     </div>
                 </form>
             </div>
