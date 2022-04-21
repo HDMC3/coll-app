@@ -1,28 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
     loginForm: FormGroup;
+    failedLogin: boolean;
+    failedLoginMessage: string;
+    disableLoginButton: boolean;
+    @ViewChild('emailInput') emailInput?: ElementRef;
+    @ViewChild('passwordInput') passwordInput?: ElementRef;
 
-    constructor() {
+    constructor(private auth: AngularFireAuth) {
         this.loginForm = new FormGroup({
             email: new FormControl('', [Validators.required, Validators.pattern(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)]),
             password: new FormControl('', [Validators.required])
         });
-    }
-
-    ngOnInit(): void {
+        this.failedLogin = false;
+        this.failedLoginMessage = 'Ocurrio un problema, intenta nuevamente';
+        this.disableLoginButton = false;
     }
 
     checkControlInvalid(controlName: string) {
         const control = this.loginForm.get(controlName);
-        return control?.dirty && control?.invalid;
+        return control?.touched && control?.invalid;
     }
 
     get emailMessageError() {
@@ -46,4 +52,40 @@ export class LoginComponent implements OnInit {
         };
     }
 
+    async login() {
+        if (this.loginForm.valid) {
+            this.failedLogin = false;
+            this.loginForm.controls['email'].disable();
+            this.loginForm.controls['password'].disable();
+            this.disableLoginButton = true;
+            try {
+                const email = this.loginForm.get('email')?.value;
+                const password = this.loginForm.get('password')?.value;
+                await this.auth.signInWithEmailAndPassword(email, password);
+            } catch (error: any) {
+                this.failedLogin = true;
+                this.failedLoginMessage = 'Ocurrio un problema, intenta nuevamente';
+                if (error?.code === 'auth/wrong-password') {
+                    this.failedLoginMessage = 'Contraseña incorrecta';
+                }
+            }
+            this.loginForm.controls['email'].enable();
+            this.loginForm.controls['password'].enable();
+            this.disableLoginButton = false;
+        }
+
+        if (this.loginForm.invalid) {
+            this.loginForm.get('email')?.markAsTouched();
+            this.loginForm.get('password')?.markAsTouched();
+            this.checkControlInvalid('email');
+            this.checkControlInvalid('password');
+            if (this.loginForm.get('password')?.invalid) {
+                this.passwordInput?.nativeElement.focus();
+            }
+
+            if (this.loginForm.get('email')?.invalid) {
+                this.emailInput?.nativeElement.focus();
+            }
+        }
+    }
 }
