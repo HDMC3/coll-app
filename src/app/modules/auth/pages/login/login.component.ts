@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -16,7 +17,7 @@ export class LoginComponent {
     @ViewChild('emailInput') emailInput?: ElementRef;
     @ViewChild('passwordInput') passwordInput?: ElementRef;
 
-    constructor(private auth: AngularFireAuth) {
+    constructor(private auth: AngularFireAuth, private router: Router) {
         this.loginForm = new FormGroup({
             email: new FormControl('', [Validators.required, Validators.pattern(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)]),
             password: new FormControl('', [Validators.required])
@@ -62,6 +63,7 @@ export class LoginComponent {
                 const email = this.loginForm.get('email')?.value;
                 const password = this.loginForm.get('password')?.value;
                 await this.auth.signInWithEmailAndPassword(email, password);
+                this.router.navigate(['tasks/home']);
             } catch (error: any) {
                 this.failedLogin = true;
                 this.failedLoginMessage = 'Ocurrio un problema, intenta nuevamente';
