@@ -1,0 +1,54 @@
+<nav class="navbar bg-base-100 fixed gap-2 top-0 shadow">
+    <div class="flex">
+        <span tabindex="0" class="btn btn-ghost sm:hidden" (click)="showSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block w-6 h-6 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </span>
+        <a class="btn btn-ghost normal-case text-xl">Coll-App</a>
+    </div>
+    <div class="hidden w-full gap-2 sm:flex sm:justify-center">
+        <a class="btn btn-ghost">Tareas</a>
+        <a class="btn btn-ghost">Actividades</a>
+    </div>
+
+    <div class="hidden sm:flex sm:justify-end">
+        <div #userDropdown class="dropdown dropdown-end mr-2">
+            <div class="avatar placeholder cursor-pointer" (click)="toggleUserMenu()">
+                <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+                    <span>{{ userEmail?.[0] | uppercase }}</span>
+                </div>
+            </div>
+            <div id="user-menu" [style.opacity]="showUserMenu ? '1' : '0'" [style.visibility]="showUserMenu ? 'visible' : 'hidden'" style="transform: scale(1);" class="menu menu-compact dropdown-content mt-3 p-4 bg-base-100 rounded-box w-52 flex flex-col">
+                <span class="text-center w-full">{{ userEmail }}</span>
+                <div class="divider"></div>
+                <button class="btn btn-warning btn-sm" (click)="logOut()">Cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div [style.visibility]="showSidebarContainer ? 'visible' : 'hidden'"
+    class="sidebar-container flex min-h-screen fixed top-0 left-0 w-screen" (click)="hiddeSidebar($event)">
+    <div [ngClass]="{'show-sidebar-panel': showSidebarPanel}" class="sidebar-panel bg-base-100 shadow">
+        <div class="flex justify-between">
+            <div class="avatar-container flex gap-2 items-center">
+                <div class="avatar placeholder">
+                    <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+                        <span>{{ userEmail?.[0] | uppercase }}</span>
+                    </div>
+                </div>
+                <span class="badge badge-md">{{ userEmail }}</span>
+            </div>
+            <button id="close-sidebar-button" class="btn btn-ghost btn-sm m-1"></button>
+        </div>
+        <div class="flex flex-col gap-2 px-2">
+            <a class="btn btn-outline btn-block">Tareas</a>
+            <a class="btn btn-outline btn-block">Actividades</a>
+            <div class="divider"></div>
+            <button class="btn btn-warning btn-block" (click)="logOut()">Salir</button>
+        </div>
+    </div>
+</div>

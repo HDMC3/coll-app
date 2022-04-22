@@ -15,4 +15,8 @@ export class AuthService {
     signOut() {
         return this.auth.signOut();
     }
+
+    get currentUser() {
+        return this.auth.user;
+    }
 }
