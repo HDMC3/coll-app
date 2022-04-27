@@ -5,6 +5,7 @@ import { TasksRoutingModule } from './tasks-routing.module';
 import { TasksComponent } from './tasks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
     ],
     imports: [
         CommonModule,
+        FormsModule,
         TasksRoutingModule
     ]
 })
