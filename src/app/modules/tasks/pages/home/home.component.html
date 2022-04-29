@@ -1,8 +1,7 @@
 <div class="options-bar-container flex flex-col gap-4 justify-center items-center pt-8 px-4 flex-wrap">
     <div class="form-control shadow rounded-xl w-full md:w-8/12 lg:w-6/12">
         <div class="input-group w-full rounded-xl">
-            <input [(ngModel)]="searchedValue" type="text" placeholder="Search…"
-                class="input input-bordered w-full">
+            <input [(ngModel)]="searchedValue" type="text" placeholder="Search…" class="input input-bordered w-full">
             <button class="btn btn-square">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -15,59 +14,67 @@
 
     <div id="options-bar" class="flex flex-wrap gap-4 justify-evenly p-2 rounded-xl">
 
-        <div class="form-control shadow rounded-xl">
-            <div class="input-group">
-                <span class="bg-primary text-primary-content">
-                    <svg class="h-5 w-5" style="fill: currentColor;" viewBox="0 0 80 80" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M46 39.1424L68 13.9995L12 13.9995L34 39.1424L34 65.9995L46 56.1172V39.1424Z" />
-                        <path
-                            d="M68 13.9995L69.5052 15.3165C70.0219 14.7259 70.1455 13.8877 69.8213 13.1731C69.497 12.4585 68.7848 11.9995 68 11.9995V13.9995ZM46 39.1424L44.4948 37.8254C44.1758 38.1899 44 38.6579 44 39.1424L46 39.1424ZM12 13.9995V11.9995C11.2152 11.9995 10.503 12.4585 10.1787 13.1731C9.85446 13.8877 9.97808 14.7259 10.4948 15.3165L12 13.9995ZM34 39.1424H36C36 38.6579 35.8242 38.1899 35.5052 37.8254L34 39.1424ZM34 65.9995H32C32 66.7734 32.4465 67.4779 33.1464 67.8082C33.8463 68.1385 34.674 68.0354 35.2714 67.5434L34 65.9995ZM46 56.1172L47.2714 57.661C47.7327 57.2811 48 56.7148 48 56.1172H46ZM66.4948 12.6825L44.4948 37.8254L47.5052 40.4594L69.5052 15.3165L66.4948 12.6825ZM12 15.9995L68 15.9995V11.9995L12 11.9995V15.9995ZM35.5052 37.8254L13.5052 12.6825L10.4948 15.3165L32.4948 40.4594L35.5052 37.8254ZM36 65.9995L36 39.1424H32L32 65.9995H36ZM44.7286 54.5733L32.7286 64.4557L35.2714 67.5434L47.2714 57.661L44.7286 54.5733ZM44 39.1424L44 56.1172H48V39.1424L44 39.1424Z" />
-                    </svg>
-                </span>
-                <select [(ngModel)]="filterOptionSelected" (ngModelChange)="onFilterOptionChange($event)"
-                    class="select select-bordered select-sm">
-                    <option *ngFor="let opt of filterOptions" [ngValue]="opt">{{ opt.text }}</option>
-                    <optgroup label="Prioridad">
-                        <option *ngFor="let opt of filterPriorityOptions" [ngValue]="opt">{{ opt.text }}</option>
-                    </optgroup>
-                </select>
+        <div class="flex flex-wrap gap-4 justify-evenly">
+            <div class="form-control shadow rounded-xl">
+                <div class="input-group">
+                    <span class="bg-primary text-primary-content">
+                        <svg class="h-5 w-5" style="fill: currentColor;" viewBox="0 0 80 80" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M46 39.1424L68 13.9995L12 13.9995L34 39.1424L34 65.9995L46 56.1172V39.1424Z" />
+                            <path
+                                d="M68 13.9995L69.5052 15.3165C70.0219 14.7259 70.1455 13.8877 69.8213 13.1731C69.497 12.4585 68.7848 11.9995 68 11.9995V13.9995ZM46 39.1424L44.4948 37.8254C44.1758 38.1899 44 38.6579 44 39.1424L46 39.1424ZM12 13.9995V11.9995C11.2152 11.9995 10.503 12.4585 10.1787 13.1731C9.85446 13.8877 9.97808 14.7259 10.4948 15.3165L12 13.9995ZM34 39.1424H36C36 38.6579 35.8242 38.1899 35.5052 37.8254L34 39.1424ZM34 65.9995H32C32 66.7734 32.4465 67.4779 33.1464 67.8082C33.8463 68.1385 34.674 68.0354 35.2714 67.5434L34 65.9995ZM46 56.1172L47.2714 57.661C47.7327 57.2811 48 56.7148 48 56.1172H46ZM66.4948 12.6825L44.4948 37.8254L47.5052 40.4594L69.5052 15.3165L66.4948 12.6825ZM12 15.9995L68 15.9995V11.9995L12 11.9995V15.9995ZM35.5052 37.8254L13.5052 12.6825L10.4948 15.3165L32.4948 40.4594L35.5052 37.8254ZM36 65.9995L36 39.1424H32L32 65.9995H36ZM44.7286 54.5733L32.7286 64.4557L35.2714 67.5434L47.2714 57.661L44.7286 54.5733ZM44 39.1424L44 56.1172H48V39.1424L44 39.1424Z" />
+                        </svg>
+                    </span>
+                    <select [(ngModel)]="filterOptionSelected" (ngModelChange)="onFilterOptionChange($event)"
+                        class="select select-bordered select-sm">
+                        <option *ngFor="let opt of filterOptions" [ngValue]="opt">{{ opt.text }}</option>
+                        <optgroup label="Prioridad">
+                            <option *ngFor="let opt of filterPriorityOptions" [ngValue]="opt">{{ opt.text }}</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+    
+            <div class="form-control shadow rounded-xl">
+                <div class="input-group">
+                    <span class="bg-primary text-primary-content">
+                        <svg class="h-5 w-5" style="fill: currentColor; stroke: currentColor;" viewBox="0 0 80 80"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M23 55C23 56.6569 21.6569 58 20 58C18.3431 58 17 56.6569 17 55L23 55ZM17 16C17 14.3431 18.3431 13 20 13C21.6569 13 23 14.3431 23 16H17ZM17 55L17 16H23L23 55L17 55Z" />
+                            <path
+                                d="M25.818 55L14.182 55C13.0078 55 12.4197 56.4197 13.25 57.25L18.5858 62.5858C19.3668 63.3668 20.6332 63.3668 21.4142 62.5858L26.75 57.25C27.5803 56.4197 26.9923 55 25.818 55Z"
+                                stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M37 22H45" stroke-width="6" stroke-linecap="round" />
+                            <path d="M37 34H53" stroke-width="6" stroke-linecap="round" />
+                            <path d="M37 46L61 46" stroke-width="6" stroke-linecap="round" />
+                            <path d="M37 58L69 58" stroke-width="6" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <select [(ngModel)]="sortOptionSelected" class="select select-bordered select-sm">
+                        <option *ngFor="let opt of filterOptionSelected.sortOptions" [ngValue]="opt">{{ opt.text }}</option>
+                    </select>
+                </div>
             </div>
         </div>
 
-        <div class="form-control shadow rounded-xl">
-            <div class="input-group">
-                <span class="bg-primary text-primary-content">
-                    <svg class="h-5 w-5" style="fill: currentColor; stroke: currentColor;" viewBox="0 0 80 80"
-                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M23 55C23 56.6569 21.6569 58 20 58C18.3431 58 17 56.6569 17 55L23 55ZM17 16C17 14.3431 18.3431 13 20 13C21.6569 13 23 14.3431 23 16H17ZM17 55L17 16H23L23 55L17 55Z" />
-                        <path
-                            d="M25.818 55L14.182 55C13.0078 55 12.4197 56.4197 13.25 57.25L18.5858 62.5858C19.3668 63.3668 20.6332 63.3668 21.4142 62.5858L26.75 57.25C27.5803 56.4197 26.9923 55 25.818 55Z"
-                            stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M37 22H45" stroke-width="6" stroke-linecap="round" />
-                        <path d="M37 34H53" stroke-width="6" stroke-linecap="round" />
-                        <path d="M37 46L61 46" stroke-width="6" stroke-linecap="round" />
-                        <path d="M37 58L69 58" stroke-width="6" stroke-linecap="round" />
-                    </svg>
-                </span>
-                <select [(ngModel)]="sortOptionSelected" class="select select-bordered select-sm">
-                    <option *ngFor="let opt of filterOptionSelected.sortOptions" [ngValue]="opt">{{ opt.text }}</option>
-                </select>
-            </div>
+        <div class="flex flex-wrap gap-4 justify-evenly">
+            <button class="btn btn-primary btn-sm shadow" [disabled]="loadingTasks" (click)="applyFilter()">
+                Aplicar
+            </button>
         </div>
+        
 
-        <button class="btn btn-primary btn-sm" (click)="getTasks()">
-            Aplicar
-        </button>
+        
     </div>
 </div>
 
-<div class="tasks-container flex gap-6 py-12 px-16 flex-wrap justify-evenly">
+<div *ngIf="!loadingTasks && tasks.length > 0" class="tasks-container flex gap-6 pt-8 pb-16 px-4 sm:px-16 flex-wrap justify-evenly">
 
-    <div *ngFor="let task of tasks" class="card bg-base-100 shadow cursor-pointer">
-        <div class="card-body gap-4 p-6">
+    <div *ngFor="let task of tasks"
+        class="card hover:shadow-lg b bg-base-100 shadow cursor-pointer w-11/12 xs:w-48 sm:w-auto md:w-72 lg:w-80 xl:w-96 h-fit">
+        <div class="card-body gap-2 px-6 pt-6 pb-4">
             <h2 class="card-title">
                 {{task.name}}
             </h2>
@@ -75,7 +82,30 @@
             <div class="card-actions justify-start mt-2">
                 <div *ngFor="let tag of task.tags" class="badge badge-outline">{{tag}}</div>
             </div>
+            <div class="card-options flex gap-4 justify-end">
+                <button class="btn btn-outline btn-error btn-xs opacity-0 transition-all">Eliminar</button>
+                <button class="btn btn-outline btn-info btn-xs opacity-0 transition-all">Editar</button>
+            </div>
         </div>
     </div>
+</div>
 
+<div class="flex gap-4 justify-center fixed bottom-5 w-full">
+    <button class="btn btn-primary btn-sm shadow" [disabled]="disablePrevButton || loadingTasks"
+        (click)="getTasksPage('prev')">Anterior</button>
+    <button class="btn btn-primary btn-sm shadow" [disabled]="disableNextButton || loadingTasks"
+        (click)="getTasksPage('next')">Siguiente</button>
+</div>
+
+<div *ngIf="loadingTasks" class="flex gap-6 py-12 px-4 sm:px-16 flex-wrap justify-evenly">
+    <div class="radial-progress animate-spin" style="--value:60;"></div>
+</div>
+
+<div *ngIf="!loadingTasks && tasks?.length === 0" class="flex gap-6 py-12 px-4 sm:px-16 flex-wrap justify-evenly">
+    <div class="alert shadow w-fit">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span class="font-bold text-lg">No se encontraron tareas</span>
+        </div>
+    </div>
 </div>

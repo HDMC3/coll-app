@@ -1,5 +1,7 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FilterOptionValues, SortOptionsValues } from 'src/app/core/enums';
+import { Task } from 'src/app/core/interfaces/task.interface';
+import { TasksService } from 'src/app/core/services/tasks.service';
 
 interface SelectOption {
     text: string;
@@ -16,33 +18,30 @@ interface FilterOption extends SelectOption{
 export class HomeComponent implements OnInit {
     @HostBinding('id') homePageId = 'home-page-container';
 
-    tasks: any[];
+    tasks: Task[];
     filterOptions: FilterOption[];
     filterPriorityOptions: FilterOption[];
 
-    commonSortOptions: SelectOption[];
-    prioritySortOptions: SelectOption[];
+    sortOptions: SelectOption[];
 
     filterOptionSelected: FilterOption;
     sortOptionSelected: SelectOption;
 
     searchedValue: string;
 
-    constructor() {
+    limitTasks: number;
+
+    loadingTasks: boolean;
+    disableNextButton: boolean;
+    disablePrevButton: boolean;
+
+    lastFilterValue: number;
+    lastSortValue: number;
+
+    constructor(private tasksService: TasksService) {
         this.tasks = [];
 
-        this.commonSortOptions = [
-            {
-                text: 'Mas recientes',
-                value: SortOptionsValues.RECENT
-            },
-            {
-                text: 'Mas antiguas',
-                value: SortOptionsValues.OLDEST
-            }
-        ];
-
-        this.prioritySortOptions = [
+        this.sortOptions = [
             {
                 text: 'Mas recientes',
                 value: SortOptionsValues.RECENT
@@ -57,17 +56,17 @@ export class HomeComponent implements OnInit {
             {
                 text: 'Todas',
                 value: FilterOptionValues.ALL,
-                sortOptions: this.commonSortOptions
+                sortOptions: this.sortOptions
             },
             {
                 text: 'Completadas',
                 value: FilterOptionValues.COMPLETED,
-                sortOptions: this.commonSortOptions
+                sortOptions: this.sortOptions
             },
             {
                 text: 'Pendientes',
                 value: FilterOptionValues.PENDING,
-                sortOptions: this.commonSortOptions
+                sortOptions: this.sortOptions
             }
         ];
 
@@ -75,33 +74,41 @@ export class HomeComponent implements OnInit {
             {
                 text: 'Alta',
                 value: FilterOptionValues.PRIORITY_HIGH,
-                sortOptions: this.prioritySortOptions
+                sortOptions: this.sortOptions
             },
             {
                 text: 'Media',
                 value: FilterOptionValues.PRIORITY_MEDIUM,
-                sortOptions: this.prioritySortOptions
+                sortOptions: this.sortOptions
             },
             {
                 text: 'Baja',
                 value: FilterOptionValues.PRIORITY_LOW,
-                sortOptions: this.prioritySortOptions
+                sortOptions: this.sortOptions
             },
             {
                 text: 'Ninguna',
                 value: FilterOptionValues.NO_PRIORITY,
-                sortOptions: this.prioritySortOptions
+                sortOptions: this.sortOptions
             }
         ];
 
         this.filterOptionSelected = this.filterOptions[0];
+        this.lastFilterValue = this.filterOptionSelected.value;
         this.sortOptionSelected = this.filterOptionSelected.sortOptions[0];
+        this.lastSortValue = this.sortOptionSelected.value;
 
         this.searchedValue = '';
 
+        this.limitTasks = 10;
+
+        this.loadingTasks = false;
+        this.disablePrevButton = true;
+        this.disableNextButton = false;
     }
 
     ngOnInit(): void {
+        this.getTasks();
     }
 
     onFilterOptionChange(value: FilterOption) {
@@ -111,6 +118,54 @@ export class HomeComponent implements OnInit {
         } else {
             this.sortOptionSelected = value.sortOptions[0];
         }
+    }
+
+    getTasks() {
+        this.loadingTasks = true;
+        this.disablePrevButton = true;
+        this.disableNextButton = false;
+        this.tasksService.getTasks(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks).subscribe({
+            next: (tasks) => {
+                this.tasks = tasks;
+                this.disablePrevButton = tasks.length < this.limitTasks;
+                this.disableNextButton = tasks.length < this.limitTasks;
+                this.loadingTasks = false;
+            },
+            error: _ => {
+                this.loadingTasks = false;
+            }
+        });
+    }
+
+    applyFilter() {
+        if (this.filterOptionSelected.value === this.lastFilterValue && this.sortOptionSelected.value === this.lastSortValue) return;
+        this.lastFilterValue = this.filterOptionSelected.value;
+        this.lastSortValue = this.sortOptionSelected.value;
+        this.getTasks();
+    }
+
+    getTasksPage(directionPage: 'next' | 'prev') {
+        this.loadingTasks = true;
+        this.tasksService.getTasksPage(
+            this.filterOptionSelected.value,
+            this.sortOptionSelected.value,
+            this.limitTasks,
+            directionPage
+        ).subscribe({
+            next: (tasks) => {
+                if (tasks) {
+                    this.tasks = tasks;
+                }
+
+                this.disableNextButton = directionPage === 'next' && tasks === undefined;
+                this.disablePrevButton = directionPage === 'prev' && tasks === undefined;
+
+                this.loadingTasks = false;
+            },
+            error: _ => {
+                this.loadingTasks = false;
+            }
+        });
     }
 
 }
