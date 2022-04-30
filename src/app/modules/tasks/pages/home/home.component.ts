@@ -1,12 +1,11 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
 import { FilterOptionValues, SortOptionsValues } from 'src/app/core/enums';
+import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
+import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
 import { Task } from 'src/app/core/interfaces/task.interface';
 import { TasksService } from 'src/app/core/services/tasks.service';
+import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 
-interface SelectOption {
-    text: string;
-    value: any;
-}
 interface FilterOption extends SelectOption{
     sortOptions: SelectOption[];
 }
@@ -38,7 +37,11 @@ export class HomeComponent implements OnInit {
     lastFilterValue: number;
     lastSortValue: number;
 
-    constructor(private tasksService: TasksService) {
+    showNewTaskModal: boolean;
+
+    newTaskModal?: NewTaskModalComponent;
+
+    constructor(private tasksService: TasksService, private viewContainerRef: ViewContainerRef) {
         this.tasks = [];
 
         this.sortOptions = [
@@ -105,6 +108,8 @@ export class HomeComponent implements OnInit {
         this.loadingTasks = false;
         this.disablePrevButton = true;
         this.disableNextButton = false;
+
+        this.showNewTaskModal = false;
     }
 
     ngOnInit(): void {
@@ -166,6 +171,14 @@ export class HomeComponent implements OnInit {
                 this.loadingTasks = false;
             }
         });
+    }
+
+    openNewTaskModal() {
+        this.showNewTaskModal = true;
+    }
+
+    onCloseModal(task: ModalCloseValue<Task>) {
+        this.showNewTaskModal = false;
     }
 
 }

@@ -1,0 +1,30 @@
+<div class="modal-box relative">
+    <label class="btn btn-sm btn-circle absolute right-2 top-2" (click)="close()">✕</label>
+    <form>
+        <div class="form-control w-full ">
+            <label class="label">
+                <span class="label-text font-bold">Nombre</span>
+            </label>
+            <input type="text" placeholder="Nombre de la tarea..." class="input input-bordered input-sm w-full">
+        </div>
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text font-bold">Descripcion</span>
+            </label>
+            <textarea class="textarea textarea-bordered h-24 max-h-24"
+                placeholder="Descripcion de la tarea..."></textarea>
+        </div>
+        <div class="form-control w-full max-w-xs">
+            <label class="label">
+                <span class="label-text font-bold">Prioridad</span>
+            </label>
+            <select class="select select-sm select-bordered">
+                <option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.text }}</option>
+            </select>
+        </div>
+    </form>
+    <div class="modal-action">
+        <button class="btn btn-primary btn-sm" (click)="close()">Cancelar</button>
+        <button class="btn btn-secondary btn-sm" (click)="saveTask()">Guardar</button>
+    </div>
+</div>
