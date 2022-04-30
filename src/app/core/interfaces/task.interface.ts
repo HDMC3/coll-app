@@ -6,5 +6,4 @@ export interface Task {
     priority: number;
     creation_date: Date;
     modification_date: Date;
-    tags: string[];
 }

@@ -64,8 +64,7 @@ export class TasksService {
                 completed: data.completed,
                 priority: data.priority,
                 creation_date: data.creation_date,
-                modification_date: data.modification_date,
-                tags: data.tags
+                modification_date: data.modification_date
             });
         });
         return values;
