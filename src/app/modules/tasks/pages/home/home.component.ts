@@ -1,4 +1,5 @@
-import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { take } from 'rxjs';
 import { FilterOptionValues, SortOptionsValues } from 'src/app/core/enums';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
@@ -41,7 +42,7 @@ export class HomeComponent implements OnInit {
 
     newTaskModal?: NewTaskModalComponent;
 
-    constructor(private tasksService: TasksService, private viewContainerRef: ViewContainerRef) {
+    constructor(private tasksService: TasksService) {
         this.tasks = [];
 
         this.sortOptions = [
@@ -129,7 +130,7 @@ export class HomeComponent implements OnInit {
         this.loadingTasks = true;
         this.disablePrevButton = true;
         this.disableNextButton = false;
-        this.tasksService.getTasks(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks).subscribe({
+        this.tasksService.getTasks(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks).pipe(take(1)).subscribe({
             next: (tasks) => {
                 this.tasks = tasks;
                 this.disablePrevButton = tasks.length < this.limitTasks;
@@ -156,7 +157,7 @@ export class HomeComponent implements OnInit {
             this.sortOptionSelected.value,
             this.limitTasks,
             directionPage
-        ).subscribe({
+        ).pipe(take(1)).subscribe({
             next: (tasks) => {
                 if (tasks) {
                     this.tasks = tasks;
