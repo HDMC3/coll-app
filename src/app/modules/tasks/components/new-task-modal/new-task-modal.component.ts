@@ -1,9 +1,14 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, HostBinding, HostListener, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UserInfo } from '@angular/fire/auth';
 import { TaskPriorityValues } from 'src/app/core/enums';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
 import { Task } from 'src/app/core/interfaces/task.interface';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { Timestamp } from 'firebase/firestore';
+import { take } from 'rxjs';
 
 @Component({
     selector: 'app-new-task-modal',
@@ -20,10 +25,6 @@ import { Task } from 'src/app/core/interfaces/task.interface';
                     opacity: '0',
                     visibility: 'hidden'
                 }))
-                // animate('0.25s', style({
-                //     opacity: '1',
-                //     transform: 'translateY(0)'
-                // }))
             ])
         ])
     ]
@@ -34,7 +35,7 @@ export class NewTaskModalComponent implements OnInit {
     @HostBinding('id') componentId = 'new-task-modal';
     @HostBinding('@hiddeModal') animationModal = '';
     @Output() closeModal = new EventEmitter<ModalCloseValue<Task>>();
-    task?: Task;
+
     priorityOptions: SelectOption[] = [
         { value: TaskPriorityValues.HIGH, text: 'Alta' },
         { value: TaskPriorityValues.MEDIUM, text: 'Media' },
@@ -42,7 +43,28 @@ export class NewTaskModalComponent implements OnInit {
         { value: TaskPriorityValues.NO_PRIORITY, text: 'Sin prioridad' }
     ];
 
-    constructor() {
+    formNewTask: FormGroup;
+    nameFormControl: FormControl;
+    descriptionFormControl: FormControl;
+    priorityFormControl: FormControl;
+    currentUser?: UserInfo;
+
+    constructor(private authService: AuthService) {
+        this.nameFormControl = new FormControl('', [Validators.required, this.noEmpty]);
+        this.descriptionFormControl = new FormControl('');
+        this.priorityFormControl = new FormControl(TaskPriorityValues.NO_PRIORITY, [Validators.required]);
+
+        this.formNewTask = new FormGroup({
+            name: this.nameFormControl,
+            description: this.descriptionFormControl,
+            priority: this.priorityFormControl
+        });
+
+        this.authService.currentUser.pipe(take(1)).subscribe({
+            next: user => {
+                if (user) this.currentUser = user;
+            }
+        });
     }
 
     ngOnInit(): void {
@@ -61,7 +83,32 @@ export class NewTaskModalComponent implements OnInit {
     }
 
     saveTask() {
-        this.closeModal.emit({ action: 'ok', value: undefined });
+        if (this.formNewTask.invalid || !this.currentUser) return;
+
+        const newTask: Task = {
+            name: this.nameFormControl.value,
+            description: this.descriptionFormControl.value,
+            priority: this.priorityFormControl.value,
+            completed: false,
+            creation_date: Timestamp.fromDate(new Date()),
+            modification_date: Timestamp.fromDate(new Date()),
+            user_id: this.currentUser.uid
+        };
+
+        this.closeModal.emit({
+            action: 'ok',
+            value: newTask
+        });
+    }
+
+    noEmpty(control: FormControl) {
+        if (control.value.replace(/\s/g, '').length === 0) {
+            return {
+                empty: true
+            };
+        }
+
+        return null;
     }
 
 }
