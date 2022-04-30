@@ -139,6 +139,8 @@ export class HomeComponent implements OnInit {
             },
             error: _ => {
                 this.loadingTasks = false;
+                this.disablePrevButton = true;
+                this.disableNextButton = true;
             }
         });
     }
@@ -170,6 +172,8 @@ export class HomeComponent implements OnInit {
             },
             error: _ => {
                 this.loadingTasks = false;
+                this.disableNextButton = true;
+                this.disablePrevButton = true;
             }
         });
     }
