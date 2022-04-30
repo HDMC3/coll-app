@@ -5,7 +5,7 @@ import { TasksRoutingModule } from './tasks-routing.module';
 import { TasksComponent } from './tasks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewTaskModalComponent } from './components/new-task-modal/new-task-modal.component';
 
 
@@ -19,6 +19,7 @@ import { NewTaskModalComponent } from './components/new-task-modal/new-task-moda
     imports: [
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         TasksRoutingModule
     ]
 })

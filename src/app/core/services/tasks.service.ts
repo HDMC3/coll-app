@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentData, QueryFn, QuerySnapshot } from '@angular/fire/compat/firestore';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { WhereFilterOp, OrderByDirection } from 'firebase/firestore';
 import { FilterOptionValues, SortOptionsValues } from '../enums';
 import { Task } from '../interfaces/task.interface';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -14,41 +16,48 @@ export class TasksService {
     private firstTaskPage: any;
     private lastTaskPage: any;
 
-    constructor(private firestore: AngularFirestore) { }
+    constructor(private firestore: AngularFirestore, private authService: AuthService) { }
 
     getTasks(filterValue: number, sortValue: number, limit: number) {
-        const query = this.getTasksQuery(filterValue, sortValue, limit);
 
-        return this.firestore.collection<Task>('tasks', query).get()
-            .pipe(map(snap => {
+        return this.getTasksQuery(filterValue, sortValue, limit).pipe(
+            switchMap(queryFn => {
+                return this.firestore.collection<Task>('tasks', queryFn).get()
+                    .pipe(
+                        map(snap => {
 
-                if (snap.docs.length > 0) {
-                    this.firstTask = snap.docs[0];
-                    this.firstTaskPage = snap.docs[0];
-                    this.lastTaskPage = snap.docs[snap.docs.length - 1];
-                }
+                            if (snap.docs.length > 0) {
+                                this.firstTask = snap.docs[0];
+                                this.firstTaskPage = snap.docs[0];
+                                this.lastTaskPage = snap.docs[snap.docs.length - 1];
+                            }
 
-                return this.getDataTasks(snap);
-            }));
+                            return this.getDataTasks(snap);
+                        })
+                    );
+            })
+        );
     }
 
     getTasksPage(filterValue: number, sortValue: number, limit: number, directionPage?: 'next' | 'prev') {
-        const query = this.getTasksQuery(filterValue, sortValue, limit, directionPage);
+        return this.getTasksQuery(filterValue, sortValue, limit, directionPage).pipe(
+            switchMap(query => {
+                return this.firestore.collection<Task>('tasks', query).get()
+                    .pipe(map(snap => {
 
-        return this.firestore.collection<Task>('tasks', query).get()
-            .pipe(map(snap => {
+                        if (snap.docs.length === 0) return undefined;
 
-                if (snap.docs.length === 0) return undefined;
+                        if (snap.docs.length > 0) {
+                            this.firstTaskPage = snap.docs[0];
+                            this.lastTaskPage = snap.docs[snap.docs.length - 1];
+                        }
 
-                if (snap.docs.length > 0) {
-                    this.firstTaskPage = snap.docs[0];
-                    this.lastTaskPage = snap.docs[snap.docs.length - 1];
-                }
+                        const tasks = this.getDataTasks(snap);
 
-                const tasks = this.getDataTasks(snap);
-
-                return tasks;
-            }));
+                        return tasks;
+                    }));
+            })
+        );
     }
 
     private getDataTasks(snapshot: QuerySnapshot<Task>) {
@@ -64,80 +73,92 @@ export class TasksService {
                 completed: data.completed,
                 priority: data.priority,
                 creation_date: data.creation_date,
-                modification_date: data.modification_date
+                modification_date: data.modification_date,
+                user_id: data.user_id
             });
         });
         return values;
     }
 
-    private getTasksQuery(filterValue: number, sortValue: number, limit: number, directionPage?: 'next' | 'prev'): QueryFn<DocumentData> {
-        let filterQueryArgs: { field: string, option: WhereFilterOp, value: any } = {
-            field: '',
-            option: '!=',
-            value: undefined
-        };
+    private getTasksQuery(filterValue: number, sortValue: number, limit: number, directionPage?: 'next' | 'prev'): Observable<QueryFn<DocumentData>> {
+        return this.authService.currentUser.pipe(
+            map(user => {
+                if (!user) throw new Error('No se encontro usuario');
 
-        let sortQueryArgs: { field: string, option: OrderByDirection } = {
-            field: 'creation_date',
-            option: 'desc'
-        };
+                let filterQueryArgs: { field: string, option: WhereFilterOp, value: any } = {
+                    field: '',
+                    option: '!=',
+                    value: undefined
+                };
 
-        if (filterValue === FilterOptionValues.COMPLETED) {
-            filterQueryArgs = { field: 'completed', option: '==', value: true };
-        }
+                let sortQueryArgs: { field: string, option: OrderByDirection } = {
+                    field: 'creation_date',
+                    option: 'desc'
+                };
 
-        if (filterValue === FilterOptionValues.PENDING) {
-            filterQueryArgs = { field: 'completed', option: '==', value: false };
-        }
+                if (filterValue === FilterOptionValues.COMPLETED) {
+                    filterQueryArgs = { field: 'completed', option: '==', value: true };
+                }
 
-        if (filterValue !== FilterOptionValues.ALL && filterValue !== FilterOptionValues.PENDING && filterValue !== FilterOptionValues.COMPLETED) {
-            filterQueryArgs = { field: 'priority', option: '==', value: filterValue };
-        }
+                if (filterValue === FilterOptionValues.PENDING) {
+                    filterQueryArgs = { field: 'completed', option: '==', value: false };
+                }
 
-        if (sortValue === SortOptionsValues.OLDEST) {
-            sortQueryArgs = { field: 'creation_date', option: 'asc' };
-        }
+                if (filterValue !== FilterOptionValues.ALL && filterValue !== FilterOptionValues.PENDING && filterValue !== FilterOptionValues.COMPLETED) {
+                    filterQueryArgs = { field: 'priority', option: '==', value: filterValue };
+                }
 
-        if (filterQueryArgs.field !== '') {
+                if (sortValue === SortOptionsValues.OLDEST) {
+                    sortQueryArgs = { field: 'creation_date', option: 'asc' };
+                }
 
-            if (directionPage && directionPage === 'next') {
-                return (ref) => ref
-                    .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
-                    .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                    .startAfter(this.lastTaskPage)
-                    .limit(limit);
-            }
+                if (filterQueryArgs.field !== '') {
 
-            if (directionPage && directionPage === 'prev') {
-                return (ref) => ref
-                    .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
-                    .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                    .endBefore(this.firstTaskPage)
-                    .limit(limit);
+                    if (directionPage && directionPage === 'next') {
+                        return (ref) => ref
+                            .where('user_id', '==', user?.uid)
+                            .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                            .startAfter(this.lastTaskPage)
+                            .limit(limit);
+                    }
 
-            }
+                    if (directionPage && directionPage === 'prev') {
+                        return (ref) => ref
+                            .where('user_id', '==', user?.uid)
+                            .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                            .endBefore(this.firstTaskPage)
+                            .limit(limit);
 
-            return (ref) => ref
-                .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
-                .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                .limit(limit);
-        }
+                    }
 
-        if (directionPage && directionPage === 'next') {
-            return (ref) => ref
-                .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                .startAfter(this.lastTaskPage)
-                .limit(limit);
-        }
+                    return (ref) => ref
+                        .where('user_id', '==', user?.uid)
+                        .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
+                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                        .limit(limit);
+                }
 
-        if (directionPage && directionPage === 'prev') {
-            return (ref) => ref
-                .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                .endBefore(this.firstTaskPage)
-                .limit(limit);
+                if (directionPage && directionPage === 'next') {
+                    return (ref) => ref
+                        .where('user_id', '==', user?.uid)
+                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                        .startAfter(this.lastTaskPage)
+                        .limit(limit);
+                }
 
-        }
+                if (directionPage && directionPage === 'prev') {
+                    return (ref) => ref
+                        .where('user_id', '==', user?.uid)
+                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                        .endBefore(this.firstTaskPage)
+                        .limit(limit);
 
-        return (ref) => ref.orderBy(sortQueryArgs.field, sortQueryArgs.option).limit(limit);
+                }
+
+                return (ref) => ref.where('user_id', '==', user?.uid).orderBy(sortQueryArgs.field, sortQueryArgs.option).limit(limit);
+            })
+        );
     }
 }
