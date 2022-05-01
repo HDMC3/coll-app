@@ -7,10 +7,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from 'src/environments/environment';
 import { FormsModule } from '@angular/forms';
+import { AlertComponent } from './shared/components/alert/alert.component';
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        AlertComponent
     ],
     imports: [
         BrowserModule,
