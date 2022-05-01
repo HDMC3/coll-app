@@ -84,10 +84,9 @@
                 <h2 class="card-title">
                     {{ task.name }}
                 </h2>
-                <div [ngClass]="{'badge-error': task.priority === 0, 'badge-warning': task.priority === 1, 'badge-success': task.priority === 2}"
+                <div *ngIf="task.priority !== 3" [ngClass]="{'badge-error': task.priority === 0, 'badge-warning': task.priority === 1, 'badge-success': task.priority === 2}"
                     class="badge badge-xs">
-                    {{ task.priority === 0 ? 'Alta' : task.priority === 1 ? 'Media' : task.priority === 2 ? 'Baja' :
-                    'Sin prioridad' }}
+                    {{ task.priority === 0 ? 'Alta' : task.priority === 1 ? 'Media' : 'Baja'}}
                 </div>
             </div>
             <p>{{ task.description }}</p>
