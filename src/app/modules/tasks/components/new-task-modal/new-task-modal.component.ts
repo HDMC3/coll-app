@@ -72,13 +72,13 @@ export class NewTaskModalComponent implements OnInit {
     }
 
     close() {
-        this.closeModal.emit({ action: 'cancel', value: undefined });
+        this.closeModal.emit({ action: 'cancel' });
     }
 
     @HostListener('click', ['$event'])
     onClickComponent(event: any) {
         if (event.target.classList.contains('modal')) {
-            this.closeModal.emit({ action: 'cancel', value: undefined });
+            this.closeModal.emit({ action: 'cancel' });
         }
     }
 

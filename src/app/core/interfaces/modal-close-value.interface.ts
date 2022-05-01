@@ -1,4 +1,4 @@
 export interface ModalCloseValue<T> {
     action: 'ok' | 'cancel',
-    value: T | undefined
+    value?: T
 }

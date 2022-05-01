@@ -182,8 +182,13 @@ export class HomeComponent implements OnInit {
         this.showNewTaskModal = true;
     }
 
-    onCloseModal(task: ModalCloseValue<Task>) {
+    async onCloseModal(modalValue: ModalCloseValue<Task>) {
         this.showNewTaskModal = false;
+        if (modalValue.action === 'ok' && modalValue.value) {
+            const result = await this.tasksService.addNewTask(modalValue.value);
+            console.log(result);
+            this.getTasks();
+        }
     }
 
 }

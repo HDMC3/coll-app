@@ -60,6 +60,15 @@ export class TasksService {
         );
     }
 
+    async addNewTask(task: Task) {
+        try {
+            const newTaskRef = this.firestore.collection<Task>('tasks').add(task);
+            return newTaskRef;
+        } catch (error) {
+            return new Error('Problema al guardar tarea');
+        }
+    }
+
     private getDataTasks(snapshot: QuerySnapshot<Task>) {
         const values: Task[] = [];
 
