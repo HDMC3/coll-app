@@ -138,7 +138,7 @@ export class TasksService {
                             .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
                             .orderBy(sortQueryArgs.field, sortQueryArgs.option)
                             .endBefore(this.firstTaskPage)
-                            .limit(limit);
+                            .limitToLast(limit + 1);
 
                     }
 
@@ -162,7 +162,7 @@ export class TasksService {
                         .where('user_id', '==', user?.uid)
                         .orderBy(sortQueryArgs.field, sortQueryArgs.option)
                         .endBefore(this.firstTaskPage)
-                        .limit(limit);
+                        .limitToLast(limit + 1);
 
                 }
 
