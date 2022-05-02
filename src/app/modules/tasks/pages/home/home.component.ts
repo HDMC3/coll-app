@@ -1,6 +1,7 @@
 import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
 import { take } from 'rxjs';
-import { FilterOptionValues, SortOptionsValues } from 'src/app/core/enums';
+import { filterTasksOptions, filterTasksPriorityOptions } from 'src/app/core/constants';
+import { FilterOption } from 'src/app/core/interfaces/filter-option.interface';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
 import { Task } from 'src/app/core/interfaces/task.interface';
@@ -8,9 +9,6 @@ import { AlertControllerService } from 'src/app/core/services/alert-controller.s
 import { TasksService } from 'src/app/core/services/tasks.service';
 import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 
-interface FilterOption extends SelectOption{
-    sortOptions: SelectOption[];
-}
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -22,8 +20,6 @@ export class HomeComponent implements OnInit {
     tasks: Task[];
     filterOptions: FilterOption[];
     filterPriorityOptions: FilterOption[];
-
-    sortOptions: SelectOption[];
 
     filterOptionSelected: FilterOption;
     sortOptionSelected: SelectOption;
@@ -46,57 +42,9 @@ export class HomeComponent implements OnInit {
     constructor(private tasksService: TasksService, private alertControllerService: AlertControllerService, private containerRef: ViewContainerRef) {
         this.tasks = [];
 
-        this.sortOptions = [
-            {
-                text: 'Mas recientes',
-                value: SortOptionsValues.RECENT
-            },
-            {
-                text: 'Mas antiguas',
-                value: SortOptionsValues.OLDEST
-            }
-        ];
+        this.filterOptions = filterTasksOptions;
 
-        this.filterOptions = [
-            {
-                text: 'Todas',
-                value: FilterOptionValues.ALL,
-                sortOptions: this.sortOptions
-            },
-            {
-                text: 'Completadas',
-                value: FilterOptionValues.COMPLETED,
-                sortOptions: this.sortOptions
-            },
-            {
-                text: 'Pendientes',
-                value: FilterOptionValues.PENDING,
-                sortOptions: this.sortOptions
-            }
-        ];
-
-        this.filterPriorityOptions = [
-            {
-                text: 'Alta',
-                value: FilterOptionValues.PRIORITY_HIGH,
-                sortOptions: this.sortOptions
-            },
-            {
-                text: 'Media',
-                value: FilterOptionValues.PRIORITY_MEDIUM,
-                sortOptions: this.sortOptions
-            },
-            {
-                text: 'Baja',
-                value: FilterOptionValues.PRIORITY_LOW,
-                sortOptions: this.sortOptions
-            },
-            {
-                text: 'Ninguna',
-                value: FilterOptionValues.NO_PRIORITY,
-                sortOptions: this.sortOptions
-            }
-        ];
+        this.filterPriorityOptions = filterTasksPriorityOptions;
 
         this.filterOptionSelected = this.filterOptions[0];
         this.lastFilterValue = this.filterOptionSelected.value;
