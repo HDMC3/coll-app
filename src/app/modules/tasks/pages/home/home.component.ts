@@ -82,7 +82,7 @@ export class HomeComponent implements OnInit {
         this.tasksService.getTasks(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks).pipe(take(1)).subscribe({
             next: (tasks) => {
                 this.tasks = tasks;
-                this.disablePrevButton = tasks.length < this.limitTasks;
+                this.disablePrevButton = true;
                 this.disableNextButton = tasks.length < this.limitTasks;
                 this.loadingTasks = false;
             },
@@ -114,7 +114,7 @@ export class HomeComponent implements OnInit {
                     this.tasks = tasks;
                 }
 
-                this.disableNextButton = directionPage === 'next' && tasks === undefined;
+                this.disableNextButton = directionPage === 'next' && (tasks === undefined || tasks.length < this.limitTasks);
                 this.disablePrevButton = directionPage === 'prev' && tasks === undefined;
 
                 this.loadingTasks = false;
@@ -125,6 +125,27 @@ export class HomeComponent implements OnInit {
                 this.disablePrevButton = true;
             }
         });
+    }
+
+    getCurrentTaskPage() {
+        this.loadingTasks = true;
+        this.tasksService.getCurrentTasksPage(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks)
+            .pipe(take(1)).subscribe({
+                next: (tasks) => {
+                    if (tasks) {
+                        this.tasks = tasks;
+                    }
+
+                    this.disableNextButton = tasks.length < this.limitTasks;
+                    this.loadingTasks = false;
+                },
+                error: error => {
+                    console.log(error);
+                    this.loadingTasks = false;
+                    this.disableNextButton = true;
+                    this.disablePrevButton = true;
+                }
+            });
     }
 
     openNewTaskModal() {
@@ -142,6 +163,18 @@ export class HomeComponent implements OnInit {
             }
             this.getTasks();
         }
+    }
+
+    async deleteTask(taskId: string | undefined) {
+        if (!taskId) return;
+
+        const result = await this.tasksService.deleteTask(taskId);
+        if (result instanceof Error) {
+            this.alertControllerService.showAlert(this.containerRef, result.message + '. Si ocurren mas errores, intenta recargar', 'error', 5000);
+        } else {
+            this.alertControllerService.showAlert(this.containerRef, 'Tarea eliminada correctamente', 'success', 2500);
+        }
+        this.getCurrentTaskPage();
     }
 
 }

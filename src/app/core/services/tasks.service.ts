@@ -14,6 +14,7 @@ export class TasksService {
 
     private firstTask: any;
     private firstTaskPage: any;
+    private secondTaskPage: any;
     private lastTaskPage: any;
 
     constructor(private firestore: AngularFirestore, private authService: AuthService) { }
@@ -30,6 +31,10 @@ export class TasksService {
                                 this.firstTask = snap.docs[0];
                                 this.firstTaskPage = snap.docs[0];
                                 this.lastTaskPage = snap.docs[snap.docs.length - 1];
+                            }
+
+                            if (snap.docs.length > 1) {
+                                this.secondTaskPage = snap.docs[1];
                             }
 
                             return this.getDataTasks(snap);
@@ -52,10 +57,34 @@ export class TasksService {
                             this.lastTaskPage = snap.docs[snap.docs.length - 1];
                         }
 
+                        if (snap.docs.length > 1) {
+                            this.secondTaskPage = snap.docs[1];
+                        }
+
                         const tasks = this.getDataTasks(snap);
 
                         return tasks;
                     }));
+            })
+        );
+    }
+
+    getCurrentTasksPage(filterValue: number, sortValue: number, limit: number) {
+        return this.getTasksQuery(filterValue, sortValue, limit, 'curr').pipe(
+            switchMap(query => {
+                return this.firestore.collection<Task>('tasks', query).get()
+                    .pipe(
+                        map(snap => {
+                            if (snap.docs.length > 0) {
+                                this.firstTask = snap.docs[0];
+                                this.firstTaskPage = snap.docs[0];
+                                this.lastTaskPage = snap.docs[snap.docs.length - 1];
+                            }
+
+                            const tasks = this.getDataTasks(snap);
+                            return tasks;
+                        })
+                    );
             })
         );
     }
@@ -66,6 +95,25 @@ export class TasksService {
             return newTaskRef;
         } catch (error) {
             return new Error('Problema al guardar tarea');
+        }
+    }
+
+    async deleteTask(taskId: string) {
+        try {
+            if (this.firstTaskPage.data().id === taskId) {
+                await this.firestore.doc(this.firstTaskPage).delete();
+                this.firstTaskPage = this.secondTaskPage;
+            }
+
+            if (this.secondTaskPage.data().id === taskId) {
+                await this.firestore.doc(this.secondTaskPage).delete();
+            }
+
+            await this.firestore.doc<Task>(`tasks/${taskId}`).delete();
+
+            return taskId;
+        } catch (error) {
+            return new Error('Problema al eliminar tarea');
         }
     }
 
@@ -89,7 +137,7 @@ export class TasksService {
         return values;
     }
 
-    private getTasksQuery(filterValue: number, sortValue: number, limit: number, directionPage?: 'next' | 'prev'): Observable<QueryFn<DocumentData>> {
+    private getTasksQuery(filterValue: number, sortValue: number, limit: number, directionPage?: 'next' | 'prev' | 'curr'): Observable<QueryFn<DocumentData>> {
         return this.authService.currentUser.pipe(
             map(user => {
                 if (!user) throw new Error('No se encontro usuario');
@@ -139,7 +187,15 @@ export class TasksService {
                             .orderBy(sortQueryArgs.field, sortQueryArgs.option)
                             .endBefore(this.firstTaskPage)
                             .limitToLast(limit + 1);
+                    }
 
+                    if (directionPage && directionPage === 'curr') {
+                        return (ref) => ref
+                            .where('user_id', '==', user?.uid)
+                            .where(filterQueryArgs.field, filterQueryArgs.option, filterQueryArgs.value)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                            .startAt(this.firstTaskPage)
+                            .limit(limit);
                     }
 
                     return (ref) => ref
@@ -163,7 +219,14 @@ export class TasksService {
                         .orderBy(sortQueryArgs.field, sortQueryArgs.option)
                         .endBefore(this.firstTaskPage)
                         .limitToLast(limit + 1);
+                }
 
+                if (directionPage && directionPage === 'curr') {
+                    return (ref) => ref
+                        .where('user_id', '==', user?.uid)
+                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
+                        .startAt(this.firstTaskPage)
+                        .limit(limit);
                 }
 
                 return (ref) => ref.where('user_id', '==', user?.uid).orderBy(sortQueryArgs.field, sortQueryArgs.option).limit(limit);
