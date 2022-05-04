@@ -7,6 +7,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewTaskModalComponent } from './components/new-task-modal/new-task-modal.component';
+import { EditTaskModalComponent } from './components/edit-task-modal/edit-task-modal.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { NewTaskModalComponent } from './components/new-task-modal/new-task-moda
         TasksComponent,
         HomeComponent,
         NavbarComponent,
-        NewTaskModalComponent
+        NewTaskModalComponent,
+        EditTaskModalComponent
     ],
     imports: [
         CommonModule,
