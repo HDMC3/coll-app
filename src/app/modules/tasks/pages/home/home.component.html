@@ -136,3 +136,4 @@
 
 <app-new-task-modal (closeModal)="onCloseNewTaskModal($event)" *ngIf="showNewTaskModal"></app-new-task-modal>
 <app-edit-task-modal (closeModal)="onCloseEditTaskModal($event)" *ngIf="showEditTaskModal" [task]="taskSelectedToEdit"></app-edit-task-modal>
+<app-confirm-modal (closeModal)="onCloseConfirmDeleteTaskModal($event)" *ngIf="showConfirmDeleteTaskModal" [message]="'Esta seguro de eliminar la tarea?'"></app-confirm-modal>

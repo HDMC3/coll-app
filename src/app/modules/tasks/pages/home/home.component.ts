@@ -37,8 +37,11 @@ export class HomeComponent implements OnInit {
 
     showNewTaskModal: boolean;
     showEditTaskModal: boolean;
+    showConfirmDeleteTaskModal: boolean;
 
     taskSelectedToEdit?: Task;
+
+    taskDeleteId?: string;
 
     constructor(private tasksService: TasksService, private alertControllerService: AlertControllerService, private containerRef: ViewContainerRef) {
         this.tasks = [];
@@ -62,6 +65,7 @@ export class HomeComponent implements OnInit {
 
         this.showNewTaskModal = false;
         this.showEditTaskModal = false;
+        this.showConfirmDeleteTaskModal = false;
     }
 
     ngOnInit(): void {
@@ -189,8 +193,15 @@ export class HomeComponent implements OnInit {
 
     async deleteTask(taskId: string | undefined) {
         if (!taskId) return;
+        this.taskDeleteId = taskId;
+        this.showConfirmDeleteTaskModal = true;
+    }
 
-        const result = await this.tasksService.deleteTask(taskId);
+    async onCloseConfirmDeleteTaskModal(modalValue: ModalCloseValue<any>) {
+        this.showConfirmDeleteTaskModal = false;
+        if (modalValue.action === 'cancel' || !this.taskDeleteId) return;
+
+        const result = await this.tasksService.deleteTask(this.taskDeleteId);
         if (result instanceof Error) {
             this.alertControllerService.showAlert(this.containerRef, result.message + '. Si ocurren mas errores, intenta recargar', 'error', 5000);
         } else {
