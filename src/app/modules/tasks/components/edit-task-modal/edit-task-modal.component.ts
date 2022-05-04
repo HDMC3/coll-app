@@ -72,7 +72,9 @@ export class EditTaskModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.modalClass = this.modalClass + ' modal-open';
+        setTimeout(() => {
+            this.modalClass = this.modalClass + ' modal-open';
+        }, 50);
         if (this.task) {
             this.formEditTask.setValue({
                 name: this.task?.name,

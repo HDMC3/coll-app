@@ -68,7 +68,9 @@ export class NewTaskModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.modalClass = this.modalClass + ' modal-open';
+        setTimeout(() => {
+            this.modalClass = this.modalClass + ' modal-open';
+        }, 50);
     }
 
     close() {
