@@ -210,4 +210,14 @@ export class HomeComponent implements OnInit {
         this.getCurrentTaskPage();
     }
 
+    async markTask(complete: boolean, taskId?: string) {
+        if (!taskId) return;
+
+        const result = await this.tasksService.updateTask(taskId, { completed: complete });
+        if (result instanceof Error) {
+            this.alertControllerService.showAlert(this.containerRef, result.message + '. Si ocurren mas errores, intenta recargar', 'error', 5000);
+        }
+        this.getCurrentTaskPage();
+    }
+
 }

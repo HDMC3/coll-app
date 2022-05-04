@@ -78,31 +78,55 @@
     class="tasks-container flex gap-6 pt-8 pb-16 px-4 sm:px-16 flex-wrap justify-evenly">
 
     <div *ngFor="let task of tasks"
-        class="card hover:shadow-lg b bg-base-100 shadow cursor-pointer h-44 w-11/12 xs:w-48 sm:w-auto md:w-72 lg:w-80 xl:w-96">
+        class="card hover:shadow-lg b bg-base-100 shadow cursor-pointer w-11/12 xs:w-48 sm:w-auto md:w-72 lg:w-80 xl:w-96">
         <div class="card-body card gap-2 px-6 pt-6 pb-4">
             <div class="card-title justify-between">
-                <h2 class="card-title">
+                <h2 class="card-title gap-1">
+                    <svg class="w-6 h-6" [ngClass]="{'text-success': task.completed, 'text-base-300': !task.completed}"
+                        viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M40 68C55.464 68 68 55.464 68 40C68 24.536 55.464 12 40 12C24.536 12 12 24.536 12 40C12 55.464 24.536 68 40 68ZM56.8805 32.3737C58.0465 31.1966 58.0465 29.2882 56.8805 28.1111C55.7145 26.934 53.824 26.934 52.6579 28.1111L35.0769 45.8588L27.342 38.0506C26.176 36.8735 24.2855 36.8735 23.1195 38.0506C21.9534 39.2277 21.9534 41.1361 23.1195 42.3132L31.5581 50.8318C33.5015 52.7937 36.6523 52.7937 38.5957 50.8318L56.8805 32.3737Z"
+                            fill="currentColor" />
+                    </svg>
                     {{ task.name }}
                 </h2>
-                <div *ngIf="task.priority !== 3" [ngClass]="{'badge-error': task.priority === 0, 'badge-warning': task.priority === 1, 'badge-success': task.priority === 2}"
+                <div *ngIf="task.priority !== 3"
+                    [ngClass]="{'badge-error': task.priority === 0, 'badge-warning': task.priority === 1, 'badge-success': task.priority === 2}"
                     class="badge badge-xs">
                     {{ task.priority === 0 ? 'Alta' : task.priority === 1 ? 'Media' : 'Baja'}}
                 </div>
             </div>
             <p class="overflow-hidden">{{ task.description }}</p>
-            <div class="card-options flex gap-2 justify-end pt-3">
-                <button class="btn btn-outline btn-sm opacity-70 transition-all" (click)="deleteTask(task.id)">
+            <div class="card-options flex gap-2 justify-end sm:justify-end pt-4 flex-wrap">
+                <button class="btn btn-outline btn-sm opacity-70 transition-all px-2" (click)="deleteTask(task.id)">
                     <svg class="w-5 h-6" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M33.9256 9.88647C33.1648 9.88647 32.4454 10.2329 31.9711 10.8277L26.6501 17.5H15C13.6193 17.5 12.5 18.6193 12.5 20C12.5 21.3807 13.6193 22.5 15 22.5H16.5V64C16.5 67.5899 19.4101 70.5 23 70.5H57C60.5898 70.5 63.5 67.5899 63.5 64V22.5H65C66.3807 22.5 67.5 21.3807 67.5 20C67.5 18.6193 66.3807 17.5 65 17.5H53.3499L48.029 10.8278C47.5546 10.2329 46.8352 9.88647 46.0744 9.88647H33.9256ZM33 27.5C34.3807 27.5 35.5 28.6193 35.5 30V58C35.5 59.3807 34.3807 60.5 33 60.5C31.6193 60.5 30.5 59.3807 30.5 58V30C30.5 28.6193 31.6193 27.5 33 27.5ZM49.5 30C49.5 28.6193 48.3807 27.5 47 27.5C45.6193 27.5 44.5 28.6193 44.5 30V58C44.5 59.3807 45.6193 60.5 47 60.5C48.3807 60.5 49.5 59.3807 49.5 58V30ZM46.9536 17.4986L44.8704 14.8865H35.1296L33.0464 17.4986H46.9536Z"
                             fill="currentColor" />
                     </svg>
                 </button>
-                <button class="btn btn-outline btn-sm opacity-70 transition-all" (click)="openEditTaskModal(task)">
+                <button class="btn btn-outline btn-sm opacity-70 transition-all px-2" (click)="openEditTaskModal(task)">
                     <svg class="w-5 h-6" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M15 23.7418H38.4C40.0569 23.7418 41.4 22.3986 41.4 20.7418C41.4 19.0849 40.0569 17.7418 38.4 17.7418H14C11.2386 17.7418 9 19.9803 9 22.7418V66.7418C9 69.5032 11.2386 71.7418 14 71.7418H58C60.7614 71.7418 63 69.5032 63 66.7418V42.342C63 40.6852 61.6569 39.342 60 39.342C58.3431 39.342 57 40.6852 57 42.342V65.7418H15V23.7418ZM66.9539 22.9579C68.3195 21.5923 68.3194 19.3783 66.9539 18.0128L63.4184 14.4773C62.0502 13.1091 59.8321 13.1091 58.464 14.4773L30.6997 42.2416C28.1991 44.7421 26.5975 48.0005 26.1449 51.5077L25.7115 54.8664C25.648 55.359 26.0675 55.7785 26.5601 55.715L29.9188 55.2816C33.426 54.829 36.6844 53.2274 39.1849 50.7268L66.9539 22.9579ZM58.5051 31.4057L50.0244 22.9251L54.2671 18.6824L62.7477 27.1631L58.5051 31.4057Z"
                             fill="currentColor" />
+                    </svg>
+                </button>
+                <button *ngIf="!task.completed" class="btn btn-outline btn-success btn-sm opacity-70 transition-all px-1"
+                    (click)="markTask(true, task.id)">
+                    <svg class="w-7 h-7" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M14.1214 40.092L29.6777 55.6484C30.4588 56.4294 31.7251 56.4294 32.5062 55.6484L65.0331 23.1214"
+                            stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button *ngIf="task.completed" class="btn btn-outline btn-error btn-sm opacity-70 transition-all px-1"
+                    (click)="markTask(false, task.id)">
+                    <svg class="w-7 h-7" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24.4437 24.5566L38.5858 38.6988L41.4142 41.5272L55.5564 55.6693" stroke="currentColor"
+                            stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M55.5563 24.5566L41.4142 38.6988L38.5858 41.5272L24.4436 55.6693" stroke="currentColor"
+                            stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
             </div>
@@ -135,5 +159,7 @@
 </div>
 
 <app-new-task-modal (closeModal)="onCloseNewTaskModal($event)" *ngIf="showNewTaskModal"></app-new-task-modal>
-<app-edit-task-modal (closeModal)="onCloseEditTaskModal($event)" *ngIf="showEditTaskModal" [task]="taskSelectedToEdit"></app-edit-task-modal>
-<app-confirm-modal (closeModal)="onCloseConfirmDeleteTaskModal($event)" *ngIf="showConfirmDeleteTaskModal" [message]="'Esta seguro de eliminar la tarea?'"></app-confirm-modal>
+<app-edit-task-modal (closeModal)="onCloseEditTaskModal($event)" *ngIf="showEditTaskModal" [task]="taskSelectedToEdit">
+</app-edit-task-modal>
+<app-confirm-modal (closeModal)="onCloseConfirmDeleteTaskModal($event)" *ngIf="showConfirmDeleteTaskModal"
+    [message]="'Esta seguro de eliminar la tarea?'"></app-confirm-modal>
