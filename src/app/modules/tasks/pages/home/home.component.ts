@@ -181,7 +181,7 @@ export class HomeComponent implements OnInit {
     async onCloseEditTaskModal(modalValue: ModalCloseValue<{taskId: string, changeValues: Partial<Task>}>) {
         this.showEditTaskModal = false;
         if (modalValue.action === 'ok' && modalValue.value) {
-            const result = this.tasksService.updateTask(modalValue.value.taskId, modalValue.value.changeValues);
+            const result = await this.tasksService.updateTask(modalValue.value.taskId, modalValue.value.changeValues);
             if (result instanceof Error) {
                 this.alertControllerService.showAlert(this.containerRef, result.message, 'error', 2500);
             } else {

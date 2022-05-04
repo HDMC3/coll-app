@@ -48,6 +48,7 @@ export class EditTaskModalComponent implements OnInit {
     nameFormControl: FormControl;
     descriptionFormControl: FormControl;
     priorityFormControl: FormControl;
+    completedFormControl: FormControl;
     currentUser?: UserInfo;
 
     loading: boolean;
@@ -56,10 +57,12 @@ export class EditTaskModalComponent implements OnInit {
         this.nameFormControl = new FormControl(this.task ? this.task.name : '', [Validators.required]);
         this.descriptionFormControl = new FormControl(this.task ? this.task.description : '');
         this.priorityFormControl = new FormControl(this.task ? this.task.priority : TaskPriorityValues.NO_PRIORITY, [Validators.required]);
+        this.completedFormControl = new FormControl(this.task ? this.task.completed : false, [Validators.required]);
         this.formEditTask = new FormGroup({
             name: this.nameFormControl,
             description: this.descriptionFormControl,
-            priority: this.priorityFormControl
+            priority: this.priorityFormControl,
+            completed: this.completedFormControl
         });
 
         this.authService.currentUser.pipe(take(1)).subscribe({
@@ -79,7 +82,8 @@ export class EditTaskModalComponent implements OnInit {
             this.formEditTask.setValue({
                 name: this.task?.name,
                 description: this.task?.description,
-                priority: this.task?.priority
+                priority: this.task?.priority,
+                completed: this.task.completed
             });
             this.loading = false;
         }
@@ -103,6 +107,7 @@ export class EditTaskModalComponent implements OnInit {
                     name: this.nameFormControl.value,
                     description: this.descriptionFormControl.value,
                     priority: this.priorityFormControl.value,
+                    completed: this.completedFormControl.value,
                     modification_date: Timestamp.now()
                 }
             }

@@ -5,9 +5,12 @@
             <label class="label">
                 <span class="label-text font-bold">Nombre</span>
             </label>
-            <input formControlName="name" [ngClass]="{'invalid': nameFormControl?.invalid && nameFormControl?.dirty}" type="text" placeholder="Nombre de la tarea..." class="input input-bordered input-sm w-full">
+            <input formControlName="name" [ngClass]="{'invalid': nameFormControl?.invalid && nameFormControl?.dirty}"
+                type="text" placeholder="Nombre de la tarea..." class="input input-bordered input-sm w-full">
             <label *ngIf="nameFormControl?.invalid && nameFormControl?.dirty" class="label">
-                <span class="label-text-alt"  [ngClass]="{'invalid': nameFormControl?.invalid && nameFormControl?.dirty}">El nombre es requerido</span>
+                <span class="label-text-alt"
+                    [ngClass]="{'invalid': nameFormControl?.invalid && nameFormControl?.dirty}">El nombre es
+                    requerido</span>
             </label>
         </div>
         <div class="form-control">
@@ -21,14 +24,22 @@
             <label class="label">
                 <span class="label-text font-bold">Prioridad</span>
             </label>
-            <select formControlName="priority" [ngClass]="{'invalid': priorityFormControl?.invalid}" class="select select-sm select-bordered">
+            <select formControlName="priority" [ngClass]="{'invalid': priorityFormControl?.invalid}"
+                class="select select-sm select-bordered">
                 <option *ngFor="let option of priorityOptions" [ngValue]="option.value">{{ option.text }}</option>
             </select>
+        </div>
+        <div class="form-control flex-row gap-2 items-center pt-3">
+            <label class="label cursor-pointer">
+                <span class="label-text font-bold">Completada</span>
+            </label>
+            <input formControlName="completed" type="checkbox" class="toggle toggle-accent toggle-sm">
         </div>
     </form>
     <div class="modal-action">
         <button class="btn btn-primary btn-sm" (click)="close()">Cancelar</button>
-        <button class="btn btn-secondary btn-sm" [disabled]="formEditTask.invalid" (click)="saveTaskChanges()">Guardar</button>
+        <button class="btn btn-secondary btn-sm" [disabled]="formEditTask.invalid"
+            (click)="saveTaskChanges()">Guardar</button>
     </div>
 </div>
 
