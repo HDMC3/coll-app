@@ -117,6 +117,15 @@ export class TasksService {
         }
     }
 
+    async updateTask(taskId: string, changeValues: Partial<Task>) {
+        try {
+            await this.firestore.doc<Task>(`tasks/${taskId}`).update(changeValues);
+            return taskId;
+        } catch (error) {
+            return new Error('Problema al guardar cambios');
+        }
+    }
+
     private getDataTasks(snapshot: QuerySnapshot<Task>) {
         const values: Task[] = [];
 
