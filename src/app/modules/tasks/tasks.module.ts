@@ -8,6 +8,7 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewTaskModalComponent } from './components/new-task-modal/new-task-modal.component';
 import { EditTaskModalComponent } from './components/edit-task-modal/edit-task-modal.component';
+import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { EditTaskModalComponent } from './components/edit-task-modal/edit-task-m
         HomeComponent,
         NavbarComponent,
         NewTaskModalComponent,
-        EditTaskModalComponent
+        EditTaskModalComponent,
+        ConfirmModalComponent
     ],
     imports: [
         CommonModule,
