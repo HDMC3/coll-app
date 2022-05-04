@@ -1,4 +1,5 @@
 import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
+import { Timestamp } from 'firebase/firestore';
 import { take } from 'rxjs';
 import { filterTasksOptions, filterTasksPriorityOptions } from 'src/app/core/constants';
 import { FilterOption } from 'src/app/core/interfaces/filter-option.interface';
@@ -7,7 +8,6 @@ import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
 import { Task } from 'src/app/core/interfaces/task.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
 import { TasksService } from 'src/app/core/services/tasks.service';
-import { NewTaskModalComponent } from '../../components/new-task-modal/new-task-modal.component';
 
 @Component({
     selector: 'app-home',
@@ -36,8 +36,9 @@ export class HomeComponent implements OnInit {
     lastSortValue: number;
 
     showNewTaskModal: boolean;
+    showEditTaskModal: boolean;
 
-    newTaskModal?: NewTaskModalComponent;
+    taskSelectedToEdit?: Task;
 
     constructor(private tasksService: TasksService, private alertControllerService: AlertControllerService, private containerRef: ViewContainerRef) {
         this.tasks = [];
@@ -60,6 +61,7 @@ export class HomeComponent implements OnInit {
         this.disableNextButton = false;
 
         this.showNewTaskModal = false;
+        this.showEditTaskModal = false;
     }
 
     ngOnInit(): void {
@@ -152,7 +154,7 @@ export class HomeComponent implements OnInit {
         this.showNewTaskModal = true;
     }
 
-    async onCloseModal(modalValue: ModalCloseValue<Task>) {
+    async onCloseNewTaskModal(modalValue: ModalCloseValue<Task>) {
         this.showNewTaskModal = false;
         if (modalValue.action === 'ok' && modalValue.value) {
             const result = await this.tasksService.addNewTask(modalValue.value);
@@ -162,6 +164,26 @@ export class HomeComponent implements OnInit {
                 this.alertControllerService.showAlert(this.containerRef, 'Tarea creada con exito', 'success', 2500);
             }
             this.getTasks();
+        }
+    }
+
+    openEditTaskModal(task: Task) {
+        const creation_date = Timestamp.fromMillis(task.creation_date.toMillis());
+        const modification_date = Timestamp.fromMillis(task.modification_date.toMillis());
+        this.taskSelectedToEdit = { ...task, creation_date, modification_date };
+        this.showEditTaskModal = true;
+    }
+
+    async onCloseEditTaskModal(modalValue: ModalCloseValue<{taskId: string, changeValues: Partial<Task>}>) {
+        this.showEditTaskModal = false;
+        if (modalValue.action === 'ok' && modalValue.value) {
+            const result = this.tasksService.updateTask(modalValue.value.taskId, modalValue.value.changeValues);
+            if (result instanceof Error) {
+                this.alertControllerService.showAlert(this.containerRef, result.message, 'error', 2500);
+            } else {
+                this.alertControllerService.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2500);
+            }
+            this.getCurrentTaskPage();
         }
     }
 
