@@ -16,7 +16,8 @@ import { TasksService } from 'src/app/core/services/tasks.service';
 })
 export class TasksComponent implements OnInit {
 
-    @HostBinding('id') homePageId = 'home-page-container';
+    @HostBinding('id') tasksPageId = 'tasks-page-container';
+    @HostBinding('class') tasksClass = ' overflow-y-scroll';
 
     tasks: Task[];
     filterOptions: FilterOption[];
