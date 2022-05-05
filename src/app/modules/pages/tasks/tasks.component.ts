@@ -10,11 +10,12 @@ import { AlertControllerService } from 'src/app/core/services/alert-controller.s
 import { TasksService } from 'src/app/core/services/tasks.service';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    selector: 'app-tasks',
+    templateUrl: './tasks.component.html',
+    styleUrls: ['./tasks.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class TasksComponent implements OnInit {
+
     @HostBinding('id') homePageId = 'home-page-container';
 
     tasks: Task[];
