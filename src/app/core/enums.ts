@@ -5,7 +5,7 @@ export enum TaskPriorityValues {
     NO_PRIORITY
 }
 
-export enum FilterOptionValues {
+export enum TaskFilterOptionValues {
     PRIORITY_HIGH = TaskPriorityValues.HIGH,
     PRIORITY_MEDIUM = TaskPriorityValues.MEDIUM,
     PRIORITY_LOW = TaskPriorityValues.LOW,
@@ -14,6 +14,13 @@ export enum FilterOptionValues {
     COMPLETED,
     PENDING
 };
+
+export enum ProjectFilterOptionValues {
+    OWN,
+    COLLABORATOR,
+    COMPLETED,
+    IN_PROGRESS
+}
 
 export enum SortOptionsValues {
     RECENT,

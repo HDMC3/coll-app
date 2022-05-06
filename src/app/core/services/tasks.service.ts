@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentData, QueryFn, QuerySnapshot } from '@angular/fire/compat/firestore';
 import { map, switchMap } from 'rxjs/operators';
 import { WhereFilterOp, OrderByDirection } from 'firebase/firestore';
-import { FilterOptionValues, SortOptionsValues } from '../enums';
+import { TaskFilterOptionValues, SortOptionsValues } from '../enums';
 import { Task } from '../interfaces/task.interface';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Observable } from 'rxjs';
@@ -162,15 +162,15 @@ export class TasksService {
                     option: 'desc'
                 };
 
-                if (filterValue === FilterOptionValues.COMPLETED) {
+                if (filterValue === TaskFilterOptionValues.COMPLETED) {
                     filterQueryArgs = { field: 'completed', option: '==', value: true };
                 }
 
-                if (filterValue === FilterOptionValues.PENDING) {
+                if (filterValue === TaskFilterOptionValues.PENDING) {
                     filterQueryArgs = { field: 'completed', option: '==', value: false };
                 }
 
-                if (filterValue !== FilterOptionValues.ALL && filterValue !== FilterOptionValues.PENDING && filterValue !== FilterOptionValues.COMPLETED) {
+                if (filterValue !== TaskFilterOptionValues.ALL && filterValue !== TaskFilterOptionValues.PENDING && filterValue !== TaskFilterOptionValues.COMPLETED) {
                     filterQueryArgs = { field: 'priority', option: '==', value: filterValue };
                 }
 
