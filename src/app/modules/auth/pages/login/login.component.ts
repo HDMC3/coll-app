@@ -63,7 +63,7 @@ export class LoginComponent {
                 const email = this.loginForm.get('email')?.value;
                 const password = this.loginForm.get('password')?.value;
                 await this.authService.signIn(email, password);
-                this.router.navigate(['tasks/home']);
+                this.router.navigate(['app/tasks']);
             } catch (error: any) {
                 this.failedLogin = true;
                 this.failedLoginMessage = 'Ocurrio un problema, intenta nuevamente';
