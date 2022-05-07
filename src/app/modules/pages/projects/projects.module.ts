@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { ProjectsRoutingModule } from './projects-routing.module';
 import { ProjectsComponent } from './projects.component';
 import { FormsModule } from '@angular/forms';
+import { NewProjectComponent } from './new-project/new-project.component';
 
 
 @NgModule({
     declarations: [
-        ProjectsComponent
+        ProjectsComponent,
+        NewProjectComponent
     ],
     imports: [
         CommonModule,
