@@ -65,24 +65,37 @@ const filterTasksPriorityOptions: FilterOption[] = [
     }
 ];
 
-const filterProjectsOptions: FilterOption[] = [
+const filterOwnProjectsOptions: FilterOption[] = [
     {
         value: ProjectFilterOptionValues.OWN,
-        text: 'Propios',
+        text: 'Todos',
         sortOptions: sortProjectsOptions
     },
+    {
+        value: ProjectFilterOptionValues.OWN_COMPLETED,
+        text: 'Completados',
+        sortOptions: sortProjectsOptions
+    },
+    {
+        value: ProjectFilterOptionValues.OWN_IN_PROGRESS,
+        text: 'En progreso',
+        sortOptions: sortProjectsOptions
+    }
+];
+
+const filterCollaboratorProjectsOptions: FilterOption[] = [
     {
         value: ProjectFilterOptionValues.COLLABORATOR,
         text: 'Colaborador',
         sortOptions: sortProjectsOptions
     },
     {
-        value: ProjectFilterOptionValues.COMPLETED,
+        value: ProjectFilterOptionValues.COLLAB_COMPLETED,
         text: 'Completados',
         sortOptions: sortProjectsOptions
     },
     {
-        value: ProjectFilterOptionValues.IN_PROGRESS,
+        value: ProjectFilterOptionValues.COLLAB_IN_PROGRESS,
         text: 'En progreso',
         sortOptions: sortProjectsOptions
     }
@@ -91,5 +104,6 @@ const filterProjectsOptions: FilterOption[] = [
 export {
     filterTasksOptions,
     filterTasksPriorityOptions,
-    filterProjectsOptions
+    filterOwnProjectsOptions,
+    filterCollaboratorProjectsOptions
 };

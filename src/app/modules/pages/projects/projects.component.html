@@ -14,7 +14,12 @@
                         </svg>
                     </span>
                     <select [(ngModel)]="filterOptionSelected" class="select select-bordered select-sm">
-                        <option *ngFor="let opt of filterOptions" [ngValue]="opt">{{ opt.text }}</option>
+                        <optgroup label="Propios">
+                            <option *ngFor="let opt of filterOwnOptions" [ngValue]="opt">{{ opt.text }}</option>
+                        </optgroup>
+                        <optgroup label="Colaborador">
+                            <option *ngFor="let opt of filterCollaboratorOptions" [ngValue]="opt">{{ opt.text }}</option>
+                        </optgroup>
                     </select>
                 </div>
             </div>

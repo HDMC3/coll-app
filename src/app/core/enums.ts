@@ -18,8 +18,10 @@ export enum TaskFilterOptionValues {
 export enum ProjectFilterOptionValues {
     OWN,
     COLLABORATOR,
-    COMPLETED,
-    IN_PROGRESS
+    OWN_COMPLETED,
+    OWN_IN_PROGRESS,
+    COLLAB_COMPLETED,
+    COLLAB_IN_PROGRESS
 }
 
 export enum SortOptionsValues {
