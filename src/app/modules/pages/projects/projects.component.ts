@@ -1,7 +1,12 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
-import { filterProjectsOptions } from 'src/app/core/constants';
+import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
+import { take } from 'rxjs/operators';
+import { filterOwnProjectsOptions, filterCollaboratorProjectsOptions } from 'src/app/core/constants';
+import { ProjectFilterOptionValues } from 'src/app/core/enums';
 import { FilterOption } from 'src/app/core/interfaces/filter-option.interface';
+import { Project } from 'src/app/core/interfaces/project.interface';
 import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
+import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
+import { ProjectsService } from 'src/app/core/services/projects.service';
 
 @Component({
     selector: 'app-projects',
@@ -12,19 +17,54 @@ export class ProjectsComponent implements OnInit {
 
     @HostBinding('id') projectsContainerId = 'projects-page-container';
 
-    filterOptions: FilterOption[];
+    filterOwnOptions: FilterOption[];
+    filterCollaboratorOptions: FilterOption[];
     sortOptions: SelectOption[];
     filterOptionSelected: FilterOption;
     sortOptionSelected: SelectOption;
 
-    constructor() {
-        this.filterOptions = filterProjectsOptions;
-        this.filterOptionSelected = this.filterOptions[0];
+    projects: Project[];
+    showProjectOwner: boolean;
+
+    constructor(
+        private projectsService: ProjectsService,
+        private alertService: AlertControllerService,
+        private containerRef: ViewContainerRef
+    ) {
+        this.filterOwnOptions = filterOwnProjectsOptions;
+        this.filterCollaboratorOptions = filterCollaboratorProjectsOptions;
+        this.filterOptionSelected = this.filterOwnOptions[0];
         this.sortOptions = this.filterOptionSelected.sortOptions;
         this.sortOptionSelected = this.sortOptions[0];
+
+        this.projects = [];
+        this.showProjectOwner = false;
     }
 
     ngOnInit(): void {
+        this.getProjects();
+    }
+
+    getProjects() {
+        this.projectsService
+            .getOwnerProjects(this.filterOptionSelected.value, this.sortOptionSelected.value, 5)
+            .pipe(
+                take(1)
+            ).subscribe({
+                next: projects => {
+                    this.projects = projects;
+                    this.showProjectOwner = this.filterOptionSelected.value === ProjectFilterOptionValues.COLLABORATOR ||
+                        this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_COMPLETED ||
+                        this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_IN_PROGRESS;
+                },
+                error: _ => {
+                    this.alertService.showAlert(this.containerRef, 'Problema al obtener los proyectos', 'error', 3000);
+                }
+            });
+    }
+
+    applyFilter() {
+        this.getProjects();
     }
 
 }

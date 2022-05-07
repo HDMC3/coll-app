@@ -48,12 +48,38 @@
         </div>
 
         <div class="flex flex-wrap gap-4 justify-evenly">
-            <button class="btn btn-primary btn-sm shadow">
+            <button class="btn btn-primary btn-sm shadow" (click)="applyFilter()">
                 Aplicar
             </button>
             <button class="btn btn-secondary btn-sm shadow">
                 Nuevo proyecto
             </button>
         </div>
+    </div>
+</div>
+
+<div class="pt-8 pb-12 px-10">
+
+    <div class="flex flex-wrap justify-evenly gap-6">
+
+        <div *ngFor="let project of projects"
+            class="card w-11/12 sm:w-64 md:w-72 lg:w-80 xl:w-96 bg-base-100 shadow cursor-pointer">
+            <div class="card-body">
+                <div class="card-title flex-col items-start gap-1">
+                    <h2>
+                        {{ project.name }}
+                    </h2>
+                    <span *ngIf="showProjectOwner" class="text-sm text-gray-400">{{ project.owner }}</span>
+                </div>
+                <div class="divider my-0"></div>
+                <p>
+                    {{ project.description }}
+                </p>
+                <div class="card-actions justify-end font-bold pt-3">
+                    <span class="badge badge-primary self-start font-bold">{{ project.members.length }} miembros</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
