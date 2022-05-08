@@ -97,4 +97,13 @@ export class ProjectsService {
             })
         );
     }
+
+    async saveProject(project: Project) {
+        try {
+            const result = await this.firestore.collection<Project>('projects').add(project);
+            return result;
+        } catch (error) {
+            return new Error('Problema al guardar el proyecto');
+        }
+    }
 }

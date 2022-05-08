@@ -9,5 +9,4 @@ export interface Project {
     creation_date: Timestamp;
     modification_date: Timestamp;
     members: string[];
-    members_id: string[];
 }
