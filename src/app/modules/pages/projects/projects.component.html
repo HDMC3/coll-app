@@ -58,7 +58,7 @@
     </div>
 </div>
 
-<div class="pt-8 pb-12 px-10">
+<div *ngIf="!loadingProjects" class="pt-8 pb-12 px-10">
 
     <div class="flex flex-wrap justify-evenly gap-6">
 
@@ -82,4 +82,8 @@
         </div>
 
     </div>
+</div>
+
+<div *ngIf="loadingProjects" class="flex gap-6 py-12 px-4 sm:px-16 flex-wrap justify-evenly">
+    <div class="radial-progress animate-spin" style="--value:60;"></div>
 </div>

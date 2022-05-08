@@ -26,6 +26,8 @@ export class ProjectsComponent implements OnInit {
     projects: Project[];
     showProjectOwner: boolean;
 
+    loadingProjects: boolean;
+
     constructor(
         private projectsService: ProjectsService,
         private alertService: AlertControllerService,
@@ -39,6 +41,8 @@ export class ProjectsComponent implements OnInit {
 
         this.projects = [];
         this.showProjectOwner = false;
+
+        this.loadingProjects = true;
     }
 
     ngOnInit(): void {
@@ -46,6 +50,7 @@ export class ProjectsComponent implements OnInit {
     }
 
     getProjects() {
+        this.loadingProjects = true;
         this.projectsService
             .getOwnerProjects(this.filterOptionSelected.value, this.sortOptionSelected.value, 5)
             .pipe(
@@ -53,12 +58,14 @@ export class ProjectsComponent implements OnInit {
             ).subscribe({
                 next: projects => {
                     this.projects = projects;
+                    this.loadingProjects = false;
                     this.showProjectOwner = this.filterOptionSelected.value === ProjectFilterOptionValues.COLLABORATOR ||
                         this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_COMPLETED ||
                         this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_IN_PROGRESS;
                 },
                 error: _ => {
                     this.alertService.showAlert(this.containerRef, 'Problema al obtener los proyectos', 'error', 3000);
+                    this.loadingProjects = false;
                 }
             });
     }
