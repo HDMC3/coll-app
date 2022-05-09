@@ -63,7 +63,7 @@
     <div class="flex flex-wrap justify-evenly gap-6">
 
         <div *ngFor="let project of projects"
-            class="card w-11/12 sm:w-64 md:w-72 lg:w-80 xl:w-96 bg-base-100 shadow cursor-pointer">
+            class="card w-11/12 sm:w-64 md:w-72 lg:w-80 xl:w-96 bg-base-100 shadow cursor-pointer" [routerLink]="[project?.id]">
             <div class="card-body p-6">
                 <div class="card-title flex-col items-start gap-1">
                     <h2>
