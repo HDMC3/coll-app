@@ -1,6 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
 export interface Project {
+    id?: string;
     name: string;
     description: string;
     completed: boolean;

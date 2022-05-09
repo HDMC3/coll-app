@@ -35,8 +35,8 @@ export class ProjectsService {
 
                         const values: Project[] = snap.docs.map(doc => {
                             return {
-                                id: doc.id,
-                                ...doc.data()
+                                ...doc.data(),
+                                id: doc.id
                             };
                         });
 
@@ -65,8 +65,8 @@ export class ProjectsService {
 
                         const values: Project[] = snap.docs.map(doc => {
                             return {
-                                id: doc.id,
-                                ...doc.data()
+                                ...doc.data(),
+                                id: doc.id
                             };
                         });
 
