@@ -72,7 +72,7 @@
                 </p>
                 <div *ngIf="task.priority !== 3"
                     [ngClass]="{'badge-error': task.priority === 0, 'badge-warning': task.priority === 1, 'badge-success': task.priority === 2}"
-                    class="badge badge-xs self-start">
+                    class="badge badge-md self-start">
                     {{ task.priority === 0 ? 'Alta' : task.priority === 1 ? 'Media' : 'Baja'}}
                 </div>
             </div>

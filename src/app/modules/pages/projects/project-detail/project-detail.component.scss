@@ -1,0 +1,15 @@
+#project-detail-container {
+    height: calc(100vh - 4rem);
+}
+
+.table th:first-child {
+    z-index: 1;
+}
+
+#members-table.table th:first-child {
+    position: relative;
+}
+
+// table * {
+//     border-radius: 0;
+// }

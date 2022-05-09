@@ -77,6 +77,23 @@ export class ProjectsService {
         );
     }
 
+    getProject(id: string) {
+        return this.firestore.doc<Project>(`projects/${id}`).get().pipe(
+            map(snap => {
+                if (!snap.exists) throw new Error('El proyecto no existe');
+
+                const data = snap.data();
+                if (!data) throw new Error('El proyecto no existe');
+
+                const project: Project = {
+                    ...data,
+                    id: snap.id
+                };
+                return project;
+            })
+        );
+    }
+
     private getFilterQuery(filterValue: number, sortValue: number, limit: number, paginationDirection?: 'next' | 'prev' | 'curr'): Observable<QueryFn<DocumentData>> {
         return this.authService.currentUser.pipe(
             map(user => {

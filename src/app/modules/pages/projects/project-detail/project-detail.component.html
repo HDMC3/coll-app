@@ -1,1 +1,47 @@
-<p>project-detail works!</p>
+<div id="project-detail-container" class="overflow-y-scroll">
+    <div *ngIf="loading" class="flex gap-6 py-12 px-4 sm:px-16 flex-wrap justify-evenly">
+        <div class="radial-progress animate-spin" style="--value:60;"></div>
+    </div>
+
+    <div *ngIf="!loading && project" id="project-detail" class="flex flex-col pt-10 px-6 xs:px-16">
+        <div id="project-header" class="flex justify-between">
+            <h2 class="font-bold text-4xl">{{ project.name }}</h2>
+            <div class="flex items-center gap-2">
+                <button class="btn btn-primary btn-sm">Editar proyecto</button>
+            </div>
+        </div>
+        <div class="divider my-2"></div>
+        <div id="project-description" class="flex flex-col justify-between gap-4 md:flex-row">
+            <p class="text-lg max-w-xl">{{ project.description }}</p>
+            <div class="flex flex-col gap-2 w-full">
+                <h3 class="text-xl font-bold">Miembros</h3>
+                <!-- <div class="overflow-x-auto w-full border-4 rounded-xl overflow-hidden"> -->
+                <!-- <div class="overflow-x-auto w-full bg-base-300 py-1 rounded-md"> -->
+                <div class="overflow-x-auto w-full">
+                    <table id="members-table" class="table table-zebra w-full">
+                        <!-- head -->
+                        <thead>
+                            <tr>
+                                <th class="bg-base-300">Miembro</th>
+                                <th class="bg-base-300">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let member of project.members" class="hover">
+                                <td>{{ member }}</td>
+                                <td>
+                                    <div class="flex gap-2">
+                                        <button class="btn btn-error btn-sm"
+                                            style="border-radius: 0.5rem;">Eliminar</button>
+                                        <button class="btn btn-info btn-sm"
+                                            style="border-radius: 0.5rem;">Editar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
