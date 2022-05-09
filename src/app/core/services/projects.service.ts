@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, DocumentData, QueryFn } from '@angular/fire/compat/firestore';
+import { AngularFirestore, DocumentData, Query, QueryDocumentSnapshot, QueryFn } from '@angular/fire/compat/firestore';
 
 import { map, switchMap } from 'rxjs/operators';
 import { OrderByDirection } from 'firebase/firestore';
@@ -13,13 +13,26 @@ import { Project } from '../interfaces/project.interface';
 })
 export class ProjectsService {
 
+    private firstProjectPage: any;
+    private secondProjectPage: any;
+    private lastProjectPage: any;
+
     constructor(private firestore: AngularFirestore, private authService: AuthService) { }
 
-    getOwnerProjects(filterValue: number, sortValue: number, limit: number) {
+    getProjects(filterValue: number, sortValue: number, limit: number) {
         return this.getFilterQuery(filterValue, sortValue, limit).pipe(
             switchMap(query => {
                 return this.firestore.collection<Project>('projects', query).get().pipe(
                     map(snap => {
+                        if (snap.docs.length > 0) {
+                            this.firstProjectPage = snap.docs[0];
+                            this.lastProjectPage = snap.docs[snap.docs.length - 1];
+                        }
+
+                        if (snap.docs.length > 1) {
+                            this.secondProjectPage = snap.docs[1];
+                        }
+
                         const values: Project[] = snap.docs.map(doc => {
                             return {
                                 id: doc.id,
@@ -34,7 +47,37 @@ export class ProjectsService {
         );
     }
 
-    private getFilterQuery(filterValue: number, sortValue: number, limit: number): Observable<QueryFn<DocumentData>> {
+    getProjectsPage(filterValue: number, sortValue: number, limit: number, directionPage: 'next' | 'prev') {
+        return this.getFilterQuery(filterValue, sortValue, limit, directionPage).pipe(
+            switchMap(query => {
+                return this.firestore.collection<Project>('projects', query).get().pipe(
+                    map(snap => {
+                        if (snap.docs.length === 0) return undefined;
+
+                        if (snap.docs.length > 0) {
+                            this.firstProjectPage = snap.docs[0];
+                            this.lastProjectPage = snap.docs[snap.docs.length - 1];
+                        }
+
+                        if (snap.docs.length > 1) {
+                            this.secondProjectPage = snap.docs[1];
+                        }
+
+                        const values: Project[] = snap.docs.map(doc => {
+                            return {
+                                id: doc.id,
+                                ...doc.data()
+                            };
+                        });
+
+                        return values;
+                    })
+                );
+            })
+        );
+    }
+
+    private getFilterQuery(filterValue: number, sortValue: number, limit: number, paginationDirection?: 'next' | 'prev' | 'curr'): Observable<QueryFn<DocumentData>> {
         return this.authService.currentUser.pipe(
             map(user => {
                 if (!user) throw new Error('No se encontro el usuario');
@@ -52,48 +95,80 @@ export class ProjectsService {
                 }
 
                 if (filterValue === ProjectFilterOptionValues.OWN_COMPLETED) {
-                    return (ref) => ref
-                        .where('user_id', '==', user.uid)
-                        .where('completed', '==', true)
-                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                        .limit(limit);
+
+                    const query: QueryFn<DocumentData> = (ref) => {
+                        const queryRef = ref
+                            .where('user_id', '==', user.uid)
+                            .where('completed', '==', true)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option);
+
+                        return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
+                    };
+
+                    return query;
                 }
 
                 if (filterValue === ProjectFilterOptionValues.OWN_IN_PROGRESS) {
-                    return (ref) => ref
-                        .where('user_id', '==', user.uid)
-                        .where('completed', '==', false)
-                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                        .limit(limit);
+
+                    const query: QueryFn<DocumentData> = (ref) => {
+                        const queryRef = ref
+                            .where('user_id', '==', user.uid)
+                            .where('completed', '==', false)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option);
+
+                        return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
+                    };
+
+                    return query;
                 }
 
                 if (filterValue === ProjectFilterOptionValues.COLLABORATOR) {
-                    return (ref) => ref
-                        .where('members_id', 'array-contains', user.uid)
-                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                        .limit(limit);
+                    const queryFn: QueryFn<DocumentData> = (ref) => {
+                        const queryRef = ref
+                            .where('members_id', 'array-contains', user.uid)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option);
+
+                        return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
+                    };
+
+                    return queryFn;
                 }
 
                 if (filterValue === ProjectFilterOptionValues.COLLAB_COMPLETED) {
-                    return (ref) => ref
-                        .where('members_id', 'array-contains', user.uid)
-                        .where('completed', '==', true)
-                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                        .limit(limit);
+                    const queryFn: QueryFn<DocumentData> = (ref) => {
+                        const queryRef = ref
+                            .where('members_id', 'array-contains', user.uid)
+                            .where('completed', '==', true)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option);
+
+                        return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
+                    };
+
+                    return queryFn;
                 }
 
                 if (filterValue === ProjectFilterOptionValues.COLLAB_IN_PROGRESS) {
-                    return (ref) => ref
-                        .where('members_id', 'array-contains', user.uid)
-                        .where('completed', '==', false)
-                        .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                        .limit(limit);
+                    const queryFn: QueryFn<DocumentData> = (ref) => {
+                        const queryRef = ref
+                            .where('members_id', 'array-contains', user.uid)
+                            .where('completed', '==', false)
+                            .orderBy(sortQueryArgs.field, sortQueryArgs.option);
+
+                        return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
+                    };
+
+                    return queryFn;
                 }
 
-                return (ref) => ref
-                    .where('user_id', '==', user.uid)
-                    .orderBy(sortQueryArgs.field, sortQueryArgs.option)
-                    .limit(limit);
+                const queryFn: QueryFn<DocumentData> = (ref) => {
+                    const queryRef = ref
+                        .where('user_id', '==', user.uid)
+                        .orderBy(sortQueryArgs.field, sortQueryArgs.option);
+
+                    return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
+                };
+
+                return queryFn;
             })
         );
     }
@@ -105,5 +180,12 @@ export class ProjectsService {
         } catch (error) {
             return new Error('Problema al guardar el proyecto');
         }
+    }
+
+    private getPaginationQuery(queryRef: Query, pageDirection: 'next' | 'prev' | 'curr' | undefined, limit: number, firstCursor: QueryDocumentSnapshot<Project>, lastCursor: QueryDocumentSnapshot<Project>) {
+        if (pageDirection && pageDirection === 'next') return queryRef.startAfter(lastCursor).limit(limit);
+        if (pageDirection && pageDirection === 'prev') return queryRef.endBefore(firstCursor).limitToLast(limit + 1);
+        if (pageDirection && pageDirection === 'curr') return queryRef.startAt(firstCursor).limit(limit);
+        return queryRef.limit(limit);
     }
 }

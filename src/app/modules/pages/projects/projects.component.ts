@@ -28,6 +28,10 @@ export class ProjectsComponent implements OnInit {
 
     loadingProjects: boolean;
 
+    pageLimit: number;
+    disableNextButton: boolean;
+    disablePrevButton: boolean;
+
     constructor(
         private projectsService: ProjectsService,
         private alertService: AlertControllerService,
@@ -43,6 +47,10 @@ export class ProjectsComponent implements OnInit {
         this.showProjectOwner = false;
 
         this.loadingProjects = true;
+
+        this.pageLimit = 5;
+        this.disableNextButton = false;
+        this.disablePrevButton = true;
     }
 
     ngOnInit(): void {
@@ -52,13 +60,15 @@ export class ProjectsComponent implements OnInit {
     getProjects() {
         this.loadingProjects = true;
         this.projectsService
-            .getOwnerProjects(this.filterOptionSelected.value, this.sortOptionSelected.value, 5)
+            .getProjects(this.filterOptionSelected.value, this.sortOptionSelected.value, this.pageLimit)
             .pipe(
                 take(1)
             ).subscribe({
                 next: projects => {
                     this.projects = projects;
                     this.loadingProjects = false;
+                    this.disablePrevButton = true;
+                    this.disableNextButton = projects.length < this.pageLimit;
                     this.showProjectOwner = this.filterOptionSelected.value === ProjectFilterOptionValues.COLLABORATOR ||
                         this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_COMPLETED ||
                         this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_IN_PROGRESS;
@@ -66,8 +76,37 @@ export class ProjectsComponent implements OnInit {
                 error: _ => {
                     this.alertService.showAlert(this.containerRef, 'Problema al obtener los proyectos', 'error', 3000);
                     this.loadingProjects = false;
+                    this.disableNextButton = true;
+                    this.disablePrevButton = true;
                 }
             });
+    }
+
+    getProjectsPage(paginationDirection: 'next' | 'prev') {
+        this.loadingProjects = true;
+        this.projectsService.getProjectsPage(
+            this.filterOptionSelected.value,
+            this.sortOptionSelected.value,
+            this.pageLimit,
+            paginationDirection
+        ).pipe(take(1)).subscribe({
+            next: (projects) => {
+                if (projects) {
+                    this.projects = projects;
+                }
+
+                this.disableNextButton = paginationDirection === 'next' && (projects === undefined || projects.length < this.pageLimit);
+                this.disablePrevButton = paginationDirection === 'prev' && projects === undefined;
+
+                this.loadingProjects = false;
+            },
+            error: _ => {
+                this.alertService.showAlert(this.containerRef, 'Error al obtener los proyectos', 'error', 3000);
+                this.loadingProjects = false;
+                this.disableNextButton = true;
+                this.disablePrevButton = true;
+            }
+        });
     }
 
     applyFilter() {

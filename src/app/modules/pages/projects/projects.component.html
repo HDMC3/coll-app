@@ -58,13 +58,13 @@
     </div>
 </div>
 
-<div *ngIf="!loadingProjects" class="pt-8 pb-12 px-10">
+<div *ngIf="!loadingProjects" class="pt-8 pb-16 px-10">
 
     <div class="flex flex-wrap justify-evenly gap-6">
 
         <div *ngFor="let project of projects"
             class="card w-11/12 sm:w-64 md:w-72 lg:w-80 xl:w-96 bg-base-100 shadow cursor-pointer">
-            <div class="card-body">
+            <div class="card-body p-6">
                 <div class="card-title flex-col items-start gap-1">
                     <h2>
                         {{ project.name }}
@@ -76,12 +76,19 @@
                     {{ project.description }}
                 </p>
                 <div class="card-actions justify-end font-bold pt-3">
-                    <span class="badge badge-primary self-start font-bold">{{ project.members.length }} miembros</span>
+                    <span class="badge self-start font-bold">{{ project.members.length }} miembros</span>
                 </div>
             </div>
         </div>
 
     </div>
+</div>
+
+<div class="flex gap-4 justify-center fixed bottom-5 w-full">
+    <button class="btn btn-primary btn-sm shadow" [disabled]="disablePrevButton || loadingProjects"
+        (click)="getProjectsPage('prev')">Anterior</button>
+    <button class="btn btn-primary btn-sm shadow" [disabled]="disableNextButton || loadingProjects"
+        (click)="getProjectsPage('next')">Siguiente</button>
 </div>
 
 <div *ngIf="loadingProjects" class="flex gap-6 py-12 px-4 sm:px-16 flex-wrap justify-evenly">
