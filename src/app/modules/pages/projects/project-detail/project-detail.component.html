@@ -7,26 +7,23 @@
         <div id="project-header" class="flex justify-between">
             <h2 class="font-bold text-4xl">{{ project.name }}</h2>
             <div class="flex items-center gap-2">
-                <button class="btn btn-primary btn-sm">Editar proyecto</button>
+                <button class="btn btn-primary btn-sm shadow">Editar proyecto</button>
             </div>
         </div>
         <div class="divider my-2"></div>
         <div id="project-description" class="flex flex-col justify-between gap-4 md:flex-row">
             <p class="text-lg max-w-xl">{{ project.description }}</p>
-            <div class="flex flex-col gap-2 w-full">
+            <div class="flex flex-col gap-2 w-full md:max-w-3xl">
                 <h3 class="text-xl font-bold">Miembros</h3>
-                <!-- <div class="overflow-x-auto w-full border-4 rounded-xl overflow-hidden"> -->
-                <!-- <div class="overflow-x-auto w-full bg-base-300 py-1 rounded-md"> -->
                 <div class="overflow-x-auto w-full">
                     <table id="members-table" class="table table-zebra w-full">
-                        <!-- head -->
                         <thead>
                             <tr>
                                 <th class="bg-base-300">Miembro</th>
                                 <th class="bg-base-300">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody *ngIf="project.members.length > 0" >
                             <tr *ngFor="let member of project.members" class="hover">
                                 <td>{{ member }}</td>
                                 <td>
@@ -40,6 +37,79 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div *ngIf="project.members.length === 0" class="flex py-4 justify-center items-center w-full">
+                        <div  class="flex bg-base-100 p-4 items-center justify-center w-full md:w-96 xl:w-6/12 rounded-lg">
+                            <span class="text-base-content text-lg font-bold">No se encontraron miembros</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!loading && project" id="project-tasks" class="flex flex-col pt-10 pb-8 mt-1 px-6 xs:px-16">
+        <h3 class="font-bold text-2xl">Tareas del proyecto</h3>
+
+        <div class="divider mt-2 mb-6"></div>
+
+        <div class="sm:px-8 lg:px-16">
+            <div class="flex gap-2 py-2 w-fit">
+                <button class="btn btn-error btn-sm shadow">Eliminar</button>
+                <button class="btn btn-info btn-sm shadow">Editar</button>
+                <button class="btn btn-success btn-sm shadow">Nueva</button>
+            </div>
+            <div class="overflow-x-auto w-full">
+                <table id="tasks-table" class="table w-full">
+                    <thead>
+                        <tr>
+                            <th class="bg-base-300">
+                                <label>
+                                    <input type="checkbox" class="checkbox" />
+                                </label>
+                            </th>
+                            <th class="bg-base-300">Nombre</th>
+                            <th class="bg-base-300">Descripcion</th>
+                            <th class="bg-base-300">Prioridad</th>
+                            <th class="bg-base-300"></th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="projectTasks.length > 0">
+                        <tr *ngFor="let task of projectTasks">
+                            <th>
+                                <label>
+                                    <input type="checkbox" class="checkbox" />
+                                </label>
+                            </th>
+                            <td>
+                                <div class="flex items-center space-x-3">
+                                    <div>
+                                        <div class="font-bold">{{ task.name }}</div>
+                                        <div class="text-sm opacity-50">{{ task.owner }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="w-80 md:w-auto">
+                                    <p class="whitespace-pre-wrap">
+                                        {{ task.description }}
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-error">
+                                    {{ getPriorityText(task.priority) }}
+                                </span>
+                            </td>
+                            <th>
+                                <button class="btn btn-ghost btn-xs">Detalles</button>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="projectTasks.length === 0" class="flex py-4 justify-center items-center w-full">
+                    <div  class="flex bg-base-100 p-4 items-center justify-center w-full md:w-96 xl:w-6/12 rounded-lg">
+                        <span class="text-base-content text-lg font-bold">No se encontraron tareas</span>
+                    </div>
                 </div>
             </div>
         </div>

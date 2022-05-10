@@ -7,6 +7,7 @@ import { ProjectFilterOptionValues, SortOptionsValues } from '../enums';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { Project } from '../interfaces/project.interface';
+import { ProjectTask } from '../interfaces/project-task.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -90,6 +91,20 @@ export class ProjectsService {
                     id: snap.id
                 };
                 return project;
+            })
+        );
+    }
+
+    getProjectTasks(projectId: string) {
+        return this.firestore.collection<ProjectTask>(`projects/${projectId}/tasks`).get().pipe(
+            map(snap => {
+                const projectTasks: ProjectTask[] = snap.docs.map(doc => {
+                    return {
+                        ...doc.data() as any,
+                        id: doc.id
+                    };
+                });
+                return projectTasks;
             })
         );
     }

@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { take } from 'rxjs';
+import { catchError, forkJoin, of, take } from 'rxjs';
+import { TaskPriorityValues } from 'src/app/core/enums';
+import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
 import { ProjectsService } from 'src/app/core/services/projects.service';
@@ -15,6 +17,7 @@ export class ProjectDetailComponent implements OnInit {
     projectId?: string;
     loading: boolean;
     project?: Project;
+    projectTasks: ProjectTask[];
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -28,28 +31,58 @@ export class ProjectDetailComponent implements OnInit {
             }
         });
         this.loading = true;
+        this.projectTasks = [];
     }
 
     ngOnInit() {
         if (this.projectId) {
-            this.getProject(this.projectId);
+            this.getData(this.projectId);
         }
     }
 
-    getProject(projectId: string) {
+    getData(projectId: string) {
         this.loading = true;
-        this.projectService.getProject(projectId)
-            .pipe(take(1))
-            .subscribe({
-                next: (project) => {
-                    this.project = project;
+        forkJoin({
+            project: this.getProject$(projectId).pipe(
+                catchError(err => of(new Error(err.message)))
+            ),
+            projectTasks: this.getTasksProject$(projectId).pipe(
+                catchError(err => of(new Error(err.message)))
+            )
+        }).subscribe({
+            next: projectData => {
+                if (projectData.project instanceof Error) {
+                    const err = projectData.project;
+                    this.alertController.showAlert(this.containerRef, err.message ? err.message : 'Problema al cargar el proyecto', 'error', 3000);
                     this.loading = false;
-                },
-                error: er => {
-                    this.alertController.showAlert(this.containerRef, er.message ? er.message : 'Problema al cargar el proyecto', 'error', 3000);
+                } else if (projectData.projectTasks instanceof Error) {
+                    const err = projectData.projectTasks;
+                    this.alertController.showAlert(this.containerRef, err.message ? err.message : 'Problema al cargar las tareas', 'error', 3000);
+                    this.loading = false;
+                } else {
+                    this.project = projectData.project;
+                    this.projectTasks = projectData.projectTasks;
                     this.loading = false;
                 }
-            });
+            }
+        });
     }
 
+    getProject$(projectId: string) {
+        return this.projectService.getProject(projectId)
+            .pipe(take(1));
+    }
+
+    getTasksProject$(projectId: string) {
+        return this.projectService.getProjectTasks(projectId)
+            .pipe(take(1));
+    }
+
+    getPriorityText(priorityValue: number) {
+        if (priorityValue === TaskPriorityValues.HIGH) return 'Alta';
+        if (priorityValue === TaskPriorityValues.MEDIUM) return 'Media';
+        if (priorityValue === TaskPriorityValues.LOW) return 'Baja';
+
+        return 'Sin prioridad';
+    }
 }
