@@ -18,6 +18,23 @@ export class ProjectDetailComponent implements OnInit {
     loading: boolean;
     project?: Project;
     projectTasks: ProjectTask[];
+    projectTasksList: { task: ProjectTask, selected: boolean }[];
+    membersList: { member: string, selected: boolean }[];
+
+    memberActionButtonsState = {
+        disabledEdit: true,
+        disabledDelete: true,
+        disabledNew: false
+    };
+
+    taskActionButtonsState = {
+        disabledEdit: true,
+        disabledDelete: true,
+        disabledNew: false
+    };
+
+    generalMembersCheckValue = false;
+    generalTasksCheckValue = false;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -32,6 +49,8 @@ export class ProjectDetailComponent implements OnInit {
         });
         this.loading = true;
         this.projectTasks = [];
+        this.projectTasksList = [];
+        this.membersList = [];
     }
 
     ngOnInit() {
@@ -61,7 +80,9 @@ export class ProjectDetailComponent implements OnInit {
                     this.loading = false;
                 } else {
                     this.project = projectData.project;
+                    this.membersList = projectData.project.members.map(m => ({ member: m, selected: false }));
                     this.projectTasks = projectData.projectTasks;
+                    this.projectTasksList = projectData.projectTasks.map(t => ({ task: t, selected: false }));
                     this.loading = false;
                 }
             }
@@ -84,5 +105,49 @@ export class ProjectDetailComponent implements OnInit {
         if (priorityValue === TaskPriorityValues.LOW) return 'Baja';
 
         return 'Sin prioridad';
+    }
+
+    onGeneralMembersCheckChange(enabled: boolean) {
+        this.memberActionButtonsState = {
+            disabledEdit: !enabled || (enabled && this.membersList.length > 1),
+            disabledDelete: !enabled,
+            disabledNew: false
+        };
+
+        this.membersList.forEach(item => {
+            item.selected = enabled;
+        });
+    }
+
+    onGeneralTasksCheckChange(enabled: boolean) {
+        this.taskActionButtonsState = {
+            disabledEdit: !enabled || (enabled && this.projectTasksList.length > 1),
+            disabledDelete: !enabled,
+            disabledNew: false
+        };
+
+        this.projectTasksList.forEach(item => {
+            item.selected = enabled;
+        });
+    }
+
+    onMemberCheckChange() {
+        const selectedMembers = this.membersList.filter(m => m.selected).length;
+        this.memberActionButtonsState = {
+            disabledEdit: selectedMembers > 1 || selectedMembers === 0,
+            disabledDelete: selectedMembers === 0,
+            disabledNew: false
+        };
+        this.generalMembersCheckValue = selectedMembers === this.membersList.length;
+    }
+
+    onProjectTasksCheckChange() {
+        const selectedProjectTasks = this.projectTasksList.filter(t => t.selected).length;
+        this.taskActionButtonsState = {
+            disabledEdit: selectedProjectTasks > 1 || selectedProjectTasks === 0,
+            disabledDelete: selectedProjectTasks === 0,
+            disabledNew: false
+        };
+        this.generalTasksCheckValue = selectedProjectTasks === this.projectTasksList.length;
     }
 }
