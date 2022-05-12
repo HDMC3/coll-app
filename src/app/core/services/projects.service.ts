@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentData, Query, QueryDocumentSnapshot, QueryFn } from '@angular/fire/compat/firestore';
 
 import { map, switchMap } from 'rxjs/operators';
-import { OrderByDirection } from 'firebase/firestore';
+import { OrderByDirection, Timestamp } from 'firebase/firestore';
 import { ProjectFilterOptionValues, SortOptionsValues } from '../enums';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
@@ -109,6 +109,27 @@ export class ProjectsService {
         );
     }
 
+    async saveProject(project: Project) {
+        try {
+            const result = await this.firestore.collection<Project>('projects').add(project);
+            return result;
+        } catch (error) {
+            return new Error('Problema al guardar el proyecto');
+        }
+    }
+
+    async updateProject(project: Partial<Project>, projectId: string) {
+        try {
+            await this.firestore.doc<Project>(`projects/${projectId}`).update({
+                ...project,
+                modification_date: Timestamp.now()
+            });
+            return projectId;
+        } catch (error) {
+            return new Error('Problema al agregar miembro');
+        }
+    }
+
     private getFilterQuery(filterValue: number, sortValue: number, limit: number, paginationDirection?: 'next' | 'prev' | 'curr'): Observable<QueryFn<DocumentData>> {
         return this.authService.currentUser.pipe(
             map(user => {
@@ -203,15 +224,6 @@ export class ProjectsService {
                 return queryFn;
             })
         );
-    }
-
-    async saveProject(project: Project) {
-        try {
-            const result = await this.firestore.collection<Project>('projects').add(project);
-            return result;
-        } catch (error) {
-            return new Error('Problema al guardar el proyecto');
-        }
     }
 
     private getPaginationQuery(queryRef: Query, pageDirection: 'next' | 'prev' | 'curr' | undefined, limit: number, firstCursor: QueryDocumentSnapshot<Project>, lastCursor: QueryDocumentSnapshot<Project>) {

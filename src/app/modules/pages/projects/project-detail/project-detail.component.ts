@@ -2,6 +2,7 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, forkJoin, of, take } from 'rxjs';
 import { TaskPriorityValues } from 'src/app/core/enums';
+import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
@@ -36,6 +37,8 @@ export class ProjectDetailComponent implements OnInit {
     generalMembersCheckValue = false;
     generalTasksCheckValue = false;
 
+    showNewMemberModal: boolean;
+
     constructor(
         private activateRoute: ActivatedRoute,
         private projectService: ProjectsService,
@@ -51,6 +54,8 @@ export class ProjectDetailComponent implements OnInit {
         this.projectTasks = [];
         this.projectTasksList = [];
         this.membersList = [];
+
+        this.showNewMemberModal = false;
     }
 
     ngOnInit() {
@@ -149,5 +154,25 @@ export class ProjectDetailComponent implements OnInit {
             disabledNew: false
         };
         this.generalTasksCheckValue = selectedProjectTasks === this.projectTasksList.length;
+    }
+
+    openNewMemberModal() {
+        this.showNewMemberModal = true;
+    }
+
+    async onCloseNewMemberModal(modalValue: ModalCloseValue<string>) {
+        this.showNewMemberModal = false;
+        if (modalValue.action === 'ok' && modalValue.value && this.project && this.project.id) {
+            const newMembers = this.membersList.map(item => item.member).concat([modalValue.value]);
+            const result = await this.projectService.updateProject({ members: newMembers }, this.project.id);
+
+            if (result instanceof Error) {
+                this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            } else {
+                this.alertController.showAlert(this.containerRef, 'Miembro agregado con exito', 'success', 2000);
+                this.membersList.push({ selected: false, member: modalValue.value });
+                this.project.members.push(modalValue.value);
+            }
+        }
     }
 }

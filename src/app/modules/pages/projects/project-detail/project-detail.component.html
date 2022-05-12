@@ -18,7 +18,7 @@
                 <div class="flex gap-2 py-2 w-fit">
                     <button class="btn btn-error btn-sm shadow" [disabled]="memberActionButtonsState.disabledDelete">Eliminar</button>
                     <button class="btn btn-info btn-sm shadow" [disabled]="memberActionButtonsState.disabledEdit">Editar</button>
-                    <button class="btn btn-success btn-sm shadow" [disabled]="memberActionButtonsState.disabledNew">Nuevo</button>
+                    <button class="btn btn-success btn-sm shadow" [disabled]="memberActionButtonsState.disabledNew" (click)="openNewMemberModal()">Nuevo</button>
                 </div>
                 <div class="overflow-x-auto w-full shadow rounded-lg">
                     <table id="members-table" class="table table-sm table-zebra w-full">
@@ -123,3 +123,5 @@
         </div>
     </div>
 </div>
+
+<app-new-member-modal *ngIf="showNewMemberModal && project" [members]="project.members" (closeModal)="onCloseNewMemberModal($event)"></app-new-member-modal>

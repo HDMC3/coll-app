@@ -6,13 +6,15 @@ import { ProjectsComponent } from './projects.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewProjectComponent } from './new-project/new-project.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
+import { NewMemberModalComponent } from './components/new-member-modal/new-member-modal.component';
 
 
 @NgModule({
     declarations: [
         ProjectsComponent,
         NewProjectComponent,
-        ProjectDetailComponent
+        ProjectDetailComponent,
+        NewMemberModalComponent
     ],
     imports: [
         CommonModule,
