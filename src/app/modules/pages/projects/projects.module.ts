@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewProjectComponent } from './new-project/new-project.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { NewMemberModalComponent } from './components/new-member-modal/new-member-modal.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { NewMemberModalComponent } from './components/new-member-modal/new-membe
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        ProjectsRoutingModule
+        ProjectsRoutingModule,
+        SharedModule
     ]
 })
 export class ProjectsModule { }
