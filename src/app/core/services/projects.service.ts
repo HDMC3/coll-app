@@ -126,7 +126,37 @@ export class ProjectsService {
             });
             return projectId;
         } catch (error) {
-            return new Error('Problema al agregar miembro');
+            return new Error('Problema al guardar');
+        }
+    }
+
+    async deleteMembers(newMembers: string[], deletedMembers: string[], projectId: string) {
+        try {
+            const snapshotProjectTasks = await this.firestore.firestore.collection(`projects/${projectId}/tasks`).get();
+            const projectRef = this.firestore.firestore.doc(`projects/${projectId}`);
+
+            if (snapshotProjectTasks.empty) {
+                await projectRef.update({ members: newMembers });
+                return projectId;
+            };
+
+            return await this.firestore.firestore.runTransaction(async trans => {
+                const doc = await trans.get(projectRef);
+                if (!doc.exists) {
+                    return Promise.reject(new Error('El proyecto no existe'));
+                }
+                trans.update(projectRef, { members: newMembers });
+                snapshotProjectTasks.forEach(doc => {
+                    if (deletedMembers.includes(doc.data()['owner'])) trans.update(doc.ref, { owner: null });
+                });
+                return projectId;
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                return new Error(error.message);
+            }
+
+            return new Error('Problema al eliminar miembro(s)');
         }
     }
 

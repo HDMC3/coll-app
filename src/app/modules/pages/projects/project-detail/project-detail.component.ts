@@ -38,6 +38,8 @@ export class ProjectDetailComponent implements OnInit {
     generalTasksCheckValue = false;
 
     showNewMemberModal: boolean;
+    showConfirmModal: boolean;
+    confirmModalMessage: string;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -56,6 +58,8 @@ export class ProjectDetailComponent implements OnInit {
         this.membersList = [];
 
         this.showNewMemberModal = false;
+        this.showConfirmModal = false;
+        this.confirmModalMessage = '';
     }
 
     ngOnInit() {
@@ -136,7 +140,7 @@ export class ProjectDetailComponent implements OnInit {
         });
     }
 
-    onMemberCheckChange() {
+    onMemberCheckChange(enabled:boolean, index: number) {
         const selectedMembers = this.membersList.filter(m => m.selected).length;
         this.memberActionButtonsState = {
             disabledEdit: selectedMembers > 1 || selectedMembers === 0,
@@ -174,5 +178,35 @@ export class ProjectDetailComponent implements OnInit {
                 this.project.members.push(modalValue.value);
             }
         }
+    }
+
+    deleteMembers() {
+        this.showConfirmModal = true;
+        this.confirmModalMessage = 'Se eliminara el miembro, desea continuar?';
+    }
+
+    async onCloseDeleteMembersConfirmModal(modalValue: ModalCloseValue<any>) {
+        this.showConfirmModal = false;
+        const membersSelected = this.membersList.filter(item => item.selected);
+        if (modalValue.action !== 'ok' || membersSelected.length === 0 || !this.project || !this.project.id) return;
+
+        const newMembers = this.membersList.filter(item => !item.selected);
+        const deletedMembers = this.membersList.filter(item => item.selected);
+        const result = await this.projectService.deleteMembers(newMembers.map(item => item.member), deletedMembers.map(item => item.member), this.project.id);
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Miembro eliminado con exito', 'success', 2000);
+        this.memberActionButtonsState = {
+            disabledEdit: true,
+            disabledDelete: true,
+            disabledNew: false
+        };
+        this.membersList.length = 0;
+        this.membersList = newMembers;
+        this.project.members.length = 0;
+        this.project.members = newMembers.map(item => item.member);
     }
 }
