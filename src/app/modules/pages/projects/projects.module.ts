@@ -8,6 +8,7 @@ import { NewProjectComponent } from './new-project/new-project.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { NewMemberModalComponent } from './components/new-member-modal/new-member-modal.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { EditMemberModalComponent } from './components/edit-member-modal/edit-member-modal.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
         ProjectsComponent,
         NewProjectComponent,
         ProjectDetailComponent,
-        NewMemberModalComponent
+        NewMemberModalComponent,
+        EditMemberModalComponent
     ],
     imports: [
         CommonModule,
