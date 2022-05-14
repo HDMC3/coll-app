@@ -96,7 +96,10 @@ export class ProjectsService {
     }
 
     getProjectTasks(projectId: string) {
-        return this.firestore.collection<ProjectTask>(`projects/${projectId}/project_tasks`).get().pipe(
+        return this.firestore.collection<ProjectTask>(
+            `projects/${projectId}/project_tasks`,
+            ref => ref.orderBy('creation_date', 'desc')
+        ).get().pipe(
             map(snap => {
                 const projectTasks: ProjectTask[] = snap.docs.map(doc => {
                     return {
