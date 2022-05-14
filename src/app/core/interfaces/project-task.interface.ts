@@ -7,7 +7,8 @@ export interface ProjectTask {
     completed: boolean;
     priority: number;
     owner: string;
-    completation_date: Timestamp;
+    completation_date: Timestamp | null;
     creation_date: Timestamp;
     modification_date: Timestamp;
+    project_id: string;
 }

@@ -96,7 +96,7 @@ export class ProjectsService {
     }
 
     getProjectTasks(projectId: string) {
-        return this.firestore.collection<ProjectTask>(`projects/${projectId}/tasks`).get().pipe(
+        return this.firestore.collection<ProjectTask>(`projects/${projectId}/project_tasks`).get().pipe(
             map(snap => {
                 const projectTasks: ProjectTask[] = snap.docs.map(doc => {
                     return {
@@ -132,7 +132,7 @@ export class ProjectsService {
 
     async deleteMembers(newMembers: string[], deletedMembers: string[], projectId: string) {
         try {
-            const snapshotProjectTasks = await this.firestore.firestore.collection(`projects/${projectId}/tasks`).get();
+            const snapshotProjectTasks = await this.firestore.firestore.collection(`projects/${projectId}/project_tasks`).get();
             const projectRef = this.firestore.firestore.doc(`projects/${projectId}`);
 
             if (snapshotProjectTasks.empty) {
@@ -162,7 +162,7 @@ export class ProjectsService {
 
     async editMember(newMembers: string[], newMemberValue: string, oldMemberValue: string, projectId: string) {
         try {
-            const snapshotProjectTasks = await this.firestore.firestore.collection(`projects/${projectId}/tasks`).get();
+            const snapshotProjectTasks = await this.firestore.firestore.collection(`projects/${projectId}/project_tasks`).get();
             const projectRef = this.firestore.firestore.doc(`projects/${projectId}`);
 
             if (snapshotProjectTasks.empty) {
@@ -187,6 +187,19 @@ export class ProjectsService {
             }
 
             return new Error('Problema al guardar los cambios');
+        }
+    }
+
+    async saveNewProjectTask(projectTask: ProjectTask, projectId: string) {
+        try {
+            const result = await this.firestore.collection<ProjectTask>(`projects/${projectId}/project_tasks`).add(projectTask);
+            return result;
+        } catch (error) {
+            console.log(error);
+            if (error instanceof Error) {
+                return error;
+            }
+            return new Error('Problema al guardar la tarea');
         }
     }
 

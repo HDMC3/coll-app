@@ -42,6 +42,7 @@ export class ProjectDetailComponent implements OnInit {
     confirmModalMessage: string;
     showEditMemberModal: boolean;
     editMemberSelected?: string;
+    showNewProjectTaskModal: boolean;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -63,6 +64,7 @@ export class ProjectDetailComponent implements OnInit {
         this.showConfirmModal = false;
         this.confirmModalMessage = '';
         this.showEditMemberModal = false;
+        this.showNewProjectTaskModal = false;
     }
 
     ngOnInit() {
@@ -117,6 +119,14 @@ export class ProjectDetailComponent implements OnInit {
         if (priorityValue === TaskPriorityValues.LOW) return 'Baja';
 
         return 'Sin prioridad';
+    }
+
+    getPriorityBageColor(priorityValue: number) {
+        if (priorityValue === TaskPriorityValues.HIGH) return 'badge-error';
+        if (priorityValue === TaskPriorityValues.MEDIUM) return 'badge-warning';
+        if (priorityValue === TaskPriorityValues.LOW) return 'badge-success';
+
+        return '';
     }
 
     onGeneralMembersCheckChange(enabled: boolean) {
@@ -249,5 +259,25 @@ export class ProjectDetailComponent implements OnInit {
             disabledNew: false
         };
         memberSelected.member = modalValue.value;
+    }
+
+    openNewProjectTaskModal() {
+        this.showNewProjectTaskModal = true;
+    }
+
+    async onCloseNewProjectTaskModal(modalValue: ModalCloseValue<ProjectTask>) {
+        this.showNewProjectTaskModal = false;
+        if (modalValue.action !== 'ok' || !modalValue.value || !this.project || !this.project.id) return;
+        modalValue.value.project_id = this.project.id;
+        const result = await this.projectService.saveNewProjectTask(modalValue.value, this.project.id);
+
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Tarea guardad exitosamente', 'success', 2000);
+        this.projectTasks.push(modalValue.value);
+        this.projectTasksList.push({ selected: false, task: modalValue.value });
     }
 }

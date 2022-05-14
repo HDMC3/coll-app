@@ -64,7 +64,7 @@
             <div class="flex gap-2 py-2 w-fit">
                 <button class="btn btn-error btn-sm shadow" [disabled]="taskActionButtonsState.disabledDelete">Eliminar</button>
                 <button class="btn btn-info btn-sm shadow" [disabled]="taskActionButtonsState.disabledEdit">Editar</button>
-                <button class="btn btn-success btn-sm shadow" [disabled]="taskActionButtonsState.disabledNew">Nueva</button>
+                <button class="btn btn-success btn-sm shadow" [disabled]="taskActionButtonsState.disabledNew" (click)="openNewProjectTaskModal()">Nueva</button>
             </div>
             <div class="overflow-x-auto w-full shadow rounded-lg">
                 <table id="tasks-table" class="table w-full">
@@ -104,7 +104,7 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge-error">
+                                <span class="badge" [ngClass]="getPriorityBageColor(item.task.priority)">
                                     {{ getPriorityText(item.task.priority) }}
                                 </span>
                             </td>
@@ -126,4 +126,5 @@
 
 <app-new-member-modal *ngIf="showNewMemberModal && project" [members]="project.members" (closeModal)="onCloseNewMemberModal($event)"></app-new-member-modal>
 <app-edit-member-modal *ngIf="showEditMemberModal && project" [members]="project.members" [member]="editMemberSelected" (closeModal)="onCloseEditMemberModal($event)"></app-edit-member-modal>
+<app-new-project-task-modal *ngIf="showNewProjectTaskModal && project" [membersProject]="project.members" (closeModal)="onCloseNewProjectTaskModal($event)"></app-new-project-task-modal>
 <app-confirm-modal *ngIf="showConfirmModal" [message]="confirmModalMessage" (closeModal)="onCloseDeleteMembersConfirmModal($event)"></app-confirm-modal>
