@@ -44,6 +44,8 @@ export class ProjectDetailComponent implements OnInit {
     editMemberSelected?: string;
     showNewProjectTaskModal: boolean;
     showConfirmModalDeleteProjectTasks: boolean;
+    showEditProjectTaskModal: boolean;
+    projectTaskSelectedToEdit?: ProjectTask;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -67,6 +69,7 @@ export class ProjectDetailComponent implements OnInit {
         this.showEditMemberModal = false;
         this.showNewProjectTaskModal = false;
         this.showConfirmModalDeleteProjectTasks = false;
+        this.showEditProjectTaskModal = false;
     }
 
     ngOnInit() {
@@ -88,17 +91,19 @@ export class ProjectDetailComponent implements OnInit {
             next: projectData => {
                 if (projectData.project instanceof Error) {
                     const err = projectData.project;
+                    console.log('Proyecto');
                     this.alertController.showAlert(this.containerRef, err.message ? err.message : 'Problema al cargar el proyecto', 'error', 3000);
                     this.loading = false;
                 } else if (projectData.projectTasks instanceof Error) {
                     const err = projectData.projectTasks;
+                    console.log('Tareas de proyecto');
                     this.alertController.showAlert(this.containerRef, err.message ? err.message : 'Problema al cargar las tareas', 'error', 3000);
                     this.loading = false;
                 } else {
                     this.project = projectData.project;
                     this.membersList = projectData.project.members.map(m => ({ member: m, selected: false }));
                     this.projectTasks = projectData.projectTasks;
-                    this.projectTasksList = projectData.projectTasks.map(t => ({ task: t, selected: false }));
+                    this.projectTasksList = projectData.projectTasks.map((t: any) => ({ task: t, selected: false }));
                     this.loading = false;
                 }
             }
@@ -314,5 +319,35 @@ export class ProjectDetailComponent implements OnInit {
         this.projectTasksList = newProjectTasksList;
         this.projectTasks.length = 0;
         this.projectTasks = newProjectTasksList.map(item => item.task);
+    }
+
+    openEditProjectTaskModal() {
+        const projectTasksSelected = this.projectTasksList.filter(item => item.selected);
+        if (projectTasksSelected.length !== 1) return;
+        this.showEditProjectTaskModal = true;
+        this.projectTaskSelectedToEdit = projectTasksSelected[0].task;
+    }
+
+    async onCloseEditProjectTaskModal(modalValue: ModalCloseValue<Partial<ProjectTask>>) {
+        this.showEditProjectTaskModal = false;
+        const projectTasksSelected = this.projectTasksList.filter(item => item.selected);
+        if (modalValue.action !== 'ok' || !modalValue.value || projectTasksSelected.length !== 1 || !this.project || !this.project.id) return;
+
+        const result = await this.projectService.updateProjectTask(modalValue.value, this.project.id);
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2000);
+        for (const item of this.projectTasksList) {
+            if (item.selected) {
+                item.task = {
+                    ...item.task,
+                    ...modalValue.value
+                };
+                break;
+            }
+        }
     }
 }

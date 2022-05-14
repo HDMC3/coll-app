@@ -228,6 +228,20 @@ export class ProjectsService {
         }
     }
 
+    async updateProjectTask(projectTask: Partial<ProjectTask>, projectId: string) {
+        try {
+            if (!projectTask.id) {
+                throw new Error('La tarea no existe');
+            }
+
+            await this.firestore.doc(`projects/${projectId}/project_tasks/${projectTask.id}`).update(projectTask);
+            return projectTask.id;
+        } catch (error) {
+            if (error instanceof Error) return error;
+            return new Error('Problema al guardar cambios');
+        }
+    }
+
     private getFilterQuery(filterValue: number, sortValue: number, limit: number, paginationDirection?: 'next' | 'prev' | 'curr'): Observable<QueryFn<DocumentData>> {
         return this.authService.currentUser.pipe(
             map(user => {
@@ -276,7 +290,7 @@ export class ProjectsService {
                 if (filterValue === ProjectFilterOptionValues.COLLABORATOR) {
                     const queryFn: QueryFn<DocumentData> = (ref) => {
                         const queryRef = ref
-                            .where('members_id', 'array-contains', user.uid)
+                            .where('members', 'array-contains', user.email)
                             .orderBy(sortQueryArgs.field, sortQueryArgs.option);
 
                         return this.getPaginationQuery(queryRef, paginationDirection, limit, this.firstProjectPage, this.lastProjectPage);
@@ -288,7 +302,7 @@ export class ProjectsService {
                 if (filterValue === ProjectFilterOptionValues.COLLAB_COMPLETED) {
                     const queryFn: QueryFn<DocumentData> = (ref) => {
                         const queryRef = ref
-                            .where('members_id', 'array-contains', user.uid)
+                            .where('members', 'array-contains', user.email)
                             .where('completed', '==', true)
                             .orderBy(sortQueryArgs.field, sortQueryArgs.option);
 
@@ -301,7 +315,7 @@ export class ProjectsService {
                 if (filterValue === ProjectFilterOptionValues.COLLAB_IN_PROGRESS) {
                     const queryFn: QueryFn<DocumentData> = (ref) => {
                         const queryRef = ref
-                            .where('members_id', 'array-contains', user.uid)
+                            .where('members', 'array-contains', user.email)
                             .where('completed', '==', false)
                             .orderBy(sortQueryArgs.field, sortQueryArgs.option);
 

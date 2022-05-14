@@ -86,7 +86,7 @@ const filterOwnProjectsOptions: FilterOption[] = [
 const filterCollaboratorProjectsOptions: FilterOption[] = [
     {
         value: ProjectFilterOptionValues.COLLABORATOR,
-        text: 'Colaborador',
+        text: 'Todos',
         sortOptions: sortProjectsOptions
     },
     {
