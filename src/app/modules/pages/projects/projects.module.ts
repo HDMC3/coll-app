@@ -9,6 +9,7 @@ import { ProjectDetailComponent } from './project-detail/project-detail.componen
 import { NewMemberModalComponent } from './components/new-member-modal/new-member-modal.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { EditMemberModalComponent } from './components/edit-member-modal/edit-member-modal.component';
+import { NewProjectTaskModalComponent } from './components/new-project-task-modal/new-project-task-modal.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { EditMemberModalComponent } from './components/edit-member-modal/edit-me
         NewProjectComponent,
         ProjectDetailComponent,
         NewMemberModalComponent,
-        EditMemberModalComponent
+        EditMemberModalComponent,
+        NewProjectTaskModalComponent
     ],
     imports: [
         CommonModule,
