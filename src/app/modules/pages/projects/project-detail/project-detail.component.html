@@ -17,7 +17,7 @@
                 <h3 class="text-xl font-bold">Miembros</h3>
                 <div class="flex gap-2 py-2 w-fit">
                     <button class="btn btn-error btn-sm shadow" [disabled]="memberActionButtonsState.disabledDelete" (click)="deleteMembers()">Eliminar</button>
-                    <button class="btn btn-info btn-sm shadow" [disabled]="memberActionButtonsState.disabledEdit">Editar</button>
+                    <button class="btn btn-info btn-sm shadow" [disabled]="memberActionButtonsState.disabledEdit" (click)="openEditMemberModal()">Editar</button>
                     <button class="btn btn-success btn-sm shadow" [disabled]="memberActionButtonsState.disabledNew" (click)="openNewMemberModal()">Nuevo</button>
                 </div>
                 <div class="overflow-x-auto w-full shadow rounded-lg">
@@ -125,4 +125,5 @@
 </div>
 
 <app-new-member-modal *ngIf="showNewMemberModal && project" [members]="project.members" (closeModal)="onCloseNewMemberModal($event)"></app-new-member-modal>
+<app-edit-member-modal *ngIf="showEditMemberModal && project" [members]="project.members" [member]="editMemberSelected" (closeModal)="onCloseEditMemberModal($event)"></app-edit-member-modal>
 <app-confirm-modal *ngIf="showConfirmModal" [message]="confirmModalMessage" (closeModal)="onCloseDeleteMembersConfirmModal($event)"></app-confirm-modal>

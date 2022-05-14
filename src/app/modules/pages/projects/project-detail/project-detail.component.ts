@@ -40,6 +40,8 @@ export class ProjectDetailComponent implements OnInit {
     showNewMemberModal: boolean;
     showConfirmModal: boolean;
     confirmModalMessage: string;
+    showEditMemberModal: boolean;
+    editMemberSelected?: string;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -60,6 +62,7 @@ export class ProjectDetailComponent implements OnInit {
         this.showNewMemberModal = false;
         this.showConfirmModal = false;
         this.confirmModalMessage = '';
+        this.showEditMemberModal = false;
     }
 
     ngOnInit() {
@@ -198,7 +201,7 @@ export class ProjectDetailComponent implements OnInit {
             return;
         }
 
-        this.alertController.showAlert(this.containerRef, 'Miembro eliminado con exito', 'success', 2000);
+        this.alertController.showAlert(this.containerRef, 'Miembro(s) eliminado(s) con exito', 'success', 2000);
         this.memberActionButtonsState = {
             disabledEdit: true,
             disabledDelete: true,
@@ -208,5 +211,43 @@ export class ProjectDetailComponent implements OnInit {
         this.membersList = newMembers;
         this.project.members.length = 0;
         this.project.members = newMembers.map(item => item.member);
+    }
+
+    openEditMemberModal() {
+        this.showEditMemberModal = true;
+        const membersSelected = this.membersList.reduce((acc, item) => item.selected ? acc + 1 : acc, 0);
+        if (membersSelected !== 1) return;
+        this.editMemberSelected = this.membersList.find(item => item.selected)?.member;
+    }
+
+    async onCloseEditMemberModal(modalValue: ModalCloseValue<string>) {
+        this.showEditMemberModal = false;
+        const membersSelectedCount = this.membersList.filter(item => item.selected).length;
+        if (modalValue.action !== 'ok' || !modalValue.value || membersSelectedCount !== 1 || !this.project || !this.project.id) return;
+
+        const memberSelected = this.membersList.find(item => item.selected);
+        if (!memberSelected || memberSelected.member === modalValue.value) return;
+
+        const oldMemberValue = memberSelected.member;
+        const newMembers = this.membersList.map(item => {
+            if (item.selected && modalValue.value) {
+                return modalValue.value;
+            }
+            return item.member;
+        });
+
+        const result = await this.projectService.editMember(newMembers, modalValue.value, oldMemberValue, this.project.id);
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2000);
+        this.memberActionButtonsState = {
+            disabledEdit: true,
+            disabledDelete: true,
+            disabledNew: false
+        };
+        memberSelected.member = modalValue.value;
     }
 }
