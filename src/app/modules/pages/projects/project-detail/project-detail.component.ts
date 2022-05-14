@@ -38,11 +38,12 @@ export class ProjectDetailComponent implements OnInit {
     generalTasksCheckValue = false;
 
     showNewMemberModal: boolean;
-    showConfirmModal: boolean;
+    showConfirmModalDeleteMembers: boolean;
     confirmModalMessage: string;
     showEditMemberModal: boolean;
     editMemberSelected?: string;
     showNewProjectTaskModal: boolean;
+    showConfirmModalDeleteProjectTasks: boolean;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -61,10 +62,11 @@ export class ProjectDetailComponent implements OnInit {
         this.membersList = [];
 
         this.showNewMemberModal = false;
-        this.showConfirmModal = false;
+        this.showConfirmModalDeleteMembers = false;
         this.confirmModalMessage = '';
         this.showEditMemberModal = false;
         this.showNewProjectTaskModal = false;
+        this.showConfirmModalDeleteProjectTasks = false;
     }
 
     ngOnInit() {
@@ -194,12 +196,12 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     deleteMembers() {
-        this.showConfirmModal = true;
-        this.confirmModalMessage = 'Se eliminara el miembro, desea continuar?';
+        this.showConfirmModalDeleteMembers = true;
+        this.confirmModalMessage = 'Se eliminaran los miembros seleccionados, desea continuar?';
     }
 
     async onCloseDeleteMembersConfirmModal(modalValue: ModalCloseValue<any>) {
-        this.showConfirmModal = false;
+        this.showConfirmModalDeleteMembers = false;
         const membersSelected = this.membersList.filter(item => item.selected);
         if (modalValue.action !== 'ok' || membersSelected.length === 0 || !this.project || !this.project.id) return;
 
@@ -279,5 +281,38 @@ export class ProjectDetailComponent implements OnInit {
         this.alertController.showAlert(this.containerRef, 'Tarea guardad exitosamente', 'success', 2000);
         this.projectTasks.unshift(modalValue.value);
         this.projectTasksList.unshift({ selected: false, task: modalValue.value });
+    }
+
+    deleteProjectTasks() {
+        this.showConfirmModalDeleteProjectTasks = true;
+        this.confirmModalMessage = 'Se eliminaran las tareas seleccionadas, desea continuar?';
+    }
+
+    async onCloseDeleteProjectTasksConfirmModal(modalValue: ModalCloseValue<any>) {
+        this.showConfirmModalDeleteProjectTasks = false;
+        const projectTasksSelected = this.projectTasksList.filter(item => item.selected);
+        if (modalValue.action !== 'ok' || projectTasksSelected.length === 0 || !this.project || !this.project.id) return;
+
+        const projectTaskIds: string[] = [];
+        for (const item of projectTasksSelected) {
+            if (item.task.id) projectTaskIds.push(item.task.id);
+        }
+        const result = await this.projectService.deleteProjectTasks(projectTaskIds, this.project.id);
+
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000); return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Tareas eliminadas con exito', 'success', 2000);
+        this.taskActionButtonsState = {
+            disabledEdit: true,
+            disabledDelete: true,
+            disabledNew: false
+        };
+        const newProjectTasksList = this.projectTasksList.filter(item => !item.selected);
+        this.projectTasksList.length = 0;
+        this.projectTasksList = newProjectTasksList;
+        this.projectTasks.length = 0;
+        this.projectTasks = newProjectTasksList.map(item => item.task);
     }
 }

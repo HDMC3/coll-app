@@ -198,11 +198,33 @@ export class ProjectsService {
             const result = await this.firestore.collection<ProjectTask>(`projects/${projectId}/project_tasks`).add(projectTask);
             return result;
         } catch (error) {
-            console.log(error);
             if (error instanceof Error) {
                 return error;
             }
             return new Error('Problema al guardar la tarea');
+        }
+    }
+
+    async deleteProjectTasks(projectTaskIds: string[], projectId: string) {
+        try {
+            return await this.firestore.firestore.runTransaction(async trans => {
+                try {
+                    for (const taskId of projectTaskIds) {
+                        trans.delete(this.firestore.doc<ProjectTask>(`projects/${projectId}/project_tasks/${taskId}`).ref);
+                    }
+                    return projectId;
+                } catch (error) {
+                    if (error instanceof Error) {
+                        return error;
+                    }
+                    return new Error('Problema al eliminar tareas');
+                }
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                return error;
+            }
+            return new Error('Problema al eliminar tareas');
         }
     }
 

@@ -62,7 +62,7 @@
 
         <div class="sm:px-8 lg:px-16">
             <div class="flex gap-2 py-2 w-fit">
-                <button class="btn btn-error btn-sm shadow" [disabled]="taskActionButtonsState.disabledDelete">Eliminar</button>
+                <button class="btn btn-error btn-sm shadow" [disabled]="taskActionButtonsState.disabledDelete" (click)="deleteProjectTasks()">Eliminar</button>
                 <button class="btn btn-info btn-sm shadow" [disabled]="taskActionButtonsState.disabledEdit">Editar</button>
                 <button class="btn btn-success btn-sm shadow" [disabled]="taskActionButtonsState.disabledNew" (click)="openNewProjectTaskModal()">Nueva</button>
             </div>
@@ -92,7 +92,7 @@
                                 <div class="flex items-center space-x-3">
                                     <div>
                                         <div class="font-bold">{{ item.task.name }}</div>
-                                        <div class="text-sm opacity-50">{{ item.task.owner }}</div>
+                                        <div class="text-sm opacity-50">{{ item.task.owner === null ? 'Sin encargardo' : item.task.owner }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -127,4 +127,5 @@
 <app-new-member-modal *ngIf="showNewMemberModal && project" [members]="project.members" (closeModal)="onCloseNewMemberModal($event)"></app-new-member-modal>
 <app-edit-member-modal *ngIf="showEditMemberModal && project" [members]="project.members" [member]="editMemberSelected" (closeModal)="onCloseEditMemberModal($event)"></app-edit-member-modal>
 <app-new-project-task-modal *ngIf="showNewProjectTaskModal && project" [membersProject]="project.members" (closeModal)="onCloseNewProjectTaskModal($event)"></app-new-project-task-modal>
-<app-confirm-modal *ngIf="showConfirmModal" [message]="confirmModalMessage" (closeModal)="onCloseDeleteMembersConfirmModal($event)"></app-confirm-modal>
+<app-confirm-modal *ngIf="showConfirmModalDeleteMembers" [message]="confirmModalMessage" (closeModal)="onCloseDeleteMembersConfirmModal($event)"></app-confirm-modal>
+<app-confirm-modal *ngIf="showConfirmModalDeleteProjectTasks" [message]="confirmModalMessage" (closeModal)="onCloseDeleteProjectTasksConfirmModal($event)"></app-confirm-modal>
