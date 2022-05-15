@@ -1,5 +1,6 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localeES from '@angular/common/locales/es-GT';
 
 import { ProjectsRoutingModule } from './projects-routing.module';
 import { ProjectsComponent } from './projects.component';
@@ -11,7 +12,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { EditMemberModalComponent } from './components/edit-member-modal/edit-member-modal.component';
 import { NewProjectTaskModalComponent } from './components/new-project-task-modal/new-project-task-modal.component';
 import { EditProjectTaskModalComponent } from './components/edit-project-task-modal/edit-project-task-modal.component';
+import { ProjectDetailMemberComponent } from './project-detail-member/project-detail-member.component';
 
+registerLocaleData(localeES, 'es-GT');
 
 @NgModule({
     declarations: [
@@ -21,7 +24,8 @@ import { EditProjectTaskModalComponent } from './components/edit-project-task-mo
         NewMemberModalComponent,
         EditMemberModalComponent,
         NewProjectTaskModalComponent,
-        EditProjectTaskModalComponent
+        EditProjectTaskModalComponent,
+        ProjectDetailMemberComponent
     ],
     imports: [
         CommonModule,
@@ -29,6 +33,12 @@ import { EditProjectTaskModalComponent } from './components/edit-project-task-mo
         ReactiveFormsModule,
         ProjectsRoutingModule,
         SharedModule
+    ],
+    providers: [
+        {
+            provide: LOCALE_ID,
+            useValue: 'es-GT'
+        }
     ]
 })
 export class ProjectsModule { }

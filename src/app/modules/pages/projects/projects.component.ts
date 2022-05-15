@@ -1,4 +1,5 @@
 import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { filterOwnProjectsOptions, filterCollaboratorProjectsOptions } from 'src/app/core/constants';
 import { ProjectFilterOptionValues } from 'src/app/core/enums';
@@ -34,6 +35,8 @@ export class ProjectsComponent implements OnInit {
 
     constructor(
         private projectsService: ProjectsService,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
         private alertService: AlertControllerService,
         private containerRef: ViewContainerRef
     ) {
@@ -112,6 +115,17 @@ export class ProjectsComponent implements OnInit {
 
     applyFilter() {
         this.getProjects();
+    }
+
+    showProject(project: Project) {
+        if (this.filterOptionSelected.value === ProjectFilterOptionValues.OWN ||
+            this.filterOptionSelected.value === ProjectFilterOptionValues.OWN_COMPLETED ||
+            this.filterOptionSelected.value === ProjectFilterOptionValues.OWN_IN_PROGRESS) {
+
+            this.router.navigate(['o', project.id], { relativeTo: this.activatedRoute });
+        } else {
+            this.router.navigate(['c', project.id], { relativeTo: this.activatedRoute });
+        }
     }
 
 }
