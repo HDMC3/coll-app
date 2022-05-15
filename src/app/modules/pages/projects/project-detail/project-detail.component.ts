@@ -284,6 +284,7 @@ export class ProjectDetailComponent implements OnInit {
         }
 
         this.alertController.showAlert(this.containerRef, 'Tarea guardad exitosamente', 'success', 2000);
+        modalValue.value.id = result.id;
         this.projectTasks.unshift(modalValue.value);
         this.projectTasksList.unshift({ selected: false, task: modalValue.value });
     }
