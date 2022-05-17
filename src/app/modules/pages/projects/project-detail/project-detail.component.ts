@@ -224,6 +224,12 @@ export class ProjectDetailComponent implements OnInit {
             disabledDelete: true,
             disabledNew: false
         };
+        for (const item of this.projectTasksList) {
+            if (item.task.owner && deletedMembers.map(item => item.member).includes(item.task.owner)) {
+                item.task.owner = null;
+            }
+        }
+        this.generalMembersCheckValue = false;
         this.membersList.length = 0;
         this.membersList = newMembers;
         this.project.members.length = 0;
@@ -261,10 +267,21 @@ export class ProjectDetailComponent implements OnInit {
 
         this.alertController.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2000);
         this.memberActionButtonsState = {
-            disabledEdit: true,
+            disabledEdit: false,
             disabledDelete: true,
             disabledNew: false
         };
+        for (let i = 0; i < this.project.members.length; i++) {
+            if (this.project.members[i] === memberSelected.member) {
+                this.project.members[i] = modalValue.value;
+                break;
+            }
+        }
+        for (const item of this.projectTasksList) {
+            if (item.task.owner === memberSelected.member) {
+                item.task.owner = modalValue.value;
+            }
+        }
         memberSelected.member = modalValue.value;
     }
 
@@ -315,6 +332,7 @@ export class ProjectDetailComponent implements OnInit {
             disabledDelete: true,
             disabledNew: false
         };
+        this.generalTasksCheckValue = false;
         const newProjectTasksList = this.projectTasksList.filter(item => !item.selected);
         this.projectTasksList.length = 0;
         this.projectTasksList = newProjectTasksList;
