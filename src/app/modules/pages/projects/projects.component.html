@@ -73,7 +73,7 @@
                 </div>
                 <div class="divider my-0"></div>
                 <p>
-                    {{ project.description }}
+                    {{ project.description | maxLength }}
                 </p>
                 <div class="card-actions justify-end font-bold pt-3">
                     <span class="badge self-start font-bold">{{ project.members.length }} miembros</span>
