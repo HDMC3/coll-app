@@ -17,12 +17,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
     showUserMenu: boolean;
     currentUserSubscription?: Subscription;
     userEmail?: string | null;
+    theme: 'light' | 'dark';
 
     constructor(private authService: AuthService, private router: Router) {
         this.showSidebarPanel = false;
         this.showSidebarContainer = false;
         this.showUserMenu = false;
         this.userEmail = 'user email';
+        const storageTheme = localStorage.getItem('theme');
+        if (storageTheme && (storageTheme === 'light' || storageTheme === 'dark')) {
+            this.theme = storageTheme;
+        } else {
+            this.theme = 'light';
+            localStorage.setItem('theme', 'light');
+        }
+        const html = document.querySelector('html');
+        if (html) {
+            html.dataset['theme'] = this.theme;
+        }
     }
 
     showSidebar() {
@@ -68,5 +80,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
             this.showUserMenu = false;
         }
     };
+
+    toggleTheme() {
+        const html = document.querySelector('html');
+        if (!html) return;
+
+        if (this.theme === 'light') {
+            this.theme = 'dark';
+            html.dataset['theme'] = this.theme;
+            localStorage.setItem('theme', this.theme);
+        } else {
+            this.theme = 'light';
+            html.dataset['theme'] = this.theme;
+            localStorage.setItem('theme', this.theme);
+        }
+    }
 
 }
