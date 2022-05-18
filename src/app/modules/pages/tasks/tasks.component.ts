@@ -2,6 +2,7 @@ import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core'
 import { Timestamp } from 'firebase/firestore';
 import { take } from 'rxjs';
 import { filterTasksOptions, filterTasksPriorityOptions } from 'src/app/core/constants';
+import { TaskFilterOptionValues } from 'src/app/core/enums';
 import { FilterOption } from 'src/app/core/interfaces/filter-option.interface';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
@@ -19,7 +20,7 @@ export class TasksComponent implements OnInit {
     @HostBinding('id') tasksPageId = 'tasks-page-container';
     @HostBinding('class') tasksClass = ' overflow-y-scroll';
 
-    tasks: Task[];
+    tasksList: { loading: boolean, task: Task }[];
     filterOptions: FilterOption[];
     filterPriorityOptions: FilterOption[];
 
@@ -42,11 +43,12 @@ export class TasksComponent implements OnInit {
     showConfirmDeleteTaskModal: boolean;
 
     taskSelectedToEdit?: Task;
+    taskItemEdited?: { loading: boolean, task: Task };
 
-    taskDeleteId?: string;
+    taskItemDelete?: { loading: boolean, task: Task };
 
     constructor(private tasksService: TasksService, private alertControllerService: AlertControllerService, private containerRef: ViewContainerRef) {
-        this.tasks = [];
+        this.tasksList = [];
 
         this.filterOptions = filterTasksOptions;
 
@@ -89,7 +91,7 @@ export class TasksComponent implements OnInit {
         this.disableNextButton = false;
         this.tasksService.getTasks(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks).pipe(take(1)).subscribe({
             next: (tasks) => {
-                this.tasks = tasks;
+                this.tasksList = tasks.map(t => ({ loading: false, task: t }));
                 this.disablePrevButton = true;
                 this.disableNextButton = tasks.length < this.limitTasks;
                 this.loadingTasks = false;
@@ -119,7 +121,7 @@ export class TasksComponent implements OnInit {
         ).pipe(take(1)).subscribe({
             next: (tasks) => {
                 if (tasks) {
-                    this.tasks = tasks;
+                    this.tasksList = tasks.map(t => ({ loading: false, task: t }));
                 }
 
                 this.disableNextButton = directionPage === 'next' && (tasks === undefined || tasks.length < this.limitTasks);
@@ -135,23 +137,23 @@ export class TasksComponent implements OnInit {
         });
     }
 
-    getCurrentTaskPage() {
-        this.loadingTasks = true;
+    getCurrentTaskPage(taskItem?: { loading: boolean, task: Task }) {
         this.tasksService.getCurrentTasksPage(this.filterOptionSelected.value, this.sortOptionSelected.value, this.limitTasks)
             .pipe(take(1)).subscribe({
                 next: (tasks) => {
                     if (tasks) {
-                        this.tasks = tasks;
+                        this.tasksList = tasks.map(t => ({ loading: false, task: t }));
                     }
-
                     this.disableNextButton = tasks.length < this.limitTasks;
-                    this.loadingTasks = false;
+                    if (taskItem) taskItem.loading = false;
                 },
-                error: error => {
-                    console.log(error);
-                    this.loadingTasks = false;
+                error: _ => {
                     this.disableNextButton = true;
                     this.disablePrevButton = true;
+                    if (taskItem) {
+                        taskItem.task.completed = !taskItem.task.completed;
+                        taskItem.loading = false;
+                    }
                 }
             });
     }
@@ -173,53 +175,77 @@ export class TasksComponent implements OnInit {
         }
     }
 
-    openEditTaskModal(task: Task) {
+    openEditTaskModal(task: Task, taskItem: { loading: boolean, task: Task }) {
+        this.taskItemEdited = taskItem;
         const creation_date = Timestamp.fromMillis(task.creation_date.toMillis());
         const modification_date = Timestamp.fromMillis(task.modification_date.toMillis());
         this.taskSelectedToEdit = { ...task, creation_date, modification_date };
         this.showEditTaskModal = true;
     }
 
-    async onCloseEditTaskModal(modalValue: ModalCloseValue<{taskId: string, changeValues: Partial<Task>}>) {
+    async onCloseEditTaskModal(modalValue: ModalCloseValue<{ taskId: string, changeValues: Partial<Task> }>) {
         this.showEditTaskModal = false;
-        if (modalValue.action === 'ok' && modalValue.value) {
-            const result = await this.tasksService.updateTask(modalValue.value.taskId, modalValue.value.changeValues);
-            if (result instanceof Error) {
-                this.alertControllerService.showAlert(this.containerRef, result.message, 'error', 2500);
-            } else {
-                this.alertControllerService.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2500);
+        if (modalValue.action !== 'ok' || !modalValue.value || !this.taskItemEdited || !this.taskItemEdited.task.id) return;
+
+        this.taskItemEdited.loading = true;
+        const result = await this.tasksService.updateTask(modalValue.value.taskId, modalValue.value.changeValues);
+        if (result instanceof Error) {
+            this.alertControllerService.showAlert(this.containerRef, result.message, 'error', 2500);
+        } else {
+            this.alertControllerService.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2500);
+            this.taskItemEdited.task = { ...this.taskItemEdited.task, ...modalValue.value.changeValues };
+            if ((this.filterOptionSelected.value === TaskFilterOptionValues.COMPLETED ||
+                this.filterOptionSelected.value === TaskFilterOptionValues.PENDING) &&
+                this.taskSelectedToEdit?.completed !== modalValue.value.changeValues.completed) {
+
+                const spliceIndex = this.tasksList.indexOf(this.taskItemEdited);
+                this.tasksList.splice(spliceIndex, 1);
             }
-            this.getCurrentTaskPage();
+        }
+        if ((this.filterOptionSelected.value === TaskFilterOptionValues.COMPLETED ||
+            this.filterOptionSelected.value === TaskFilterOptionValues.PENDING) &&
+            this.taskSelectedToEdit?.completed !== modalValue.value.changeValues.completed) {
+            this.getCurrentTaskPage(this.taskItemEdited);
         }
     }
 
-    async deleteTask(taskId: string | undefined) {
-        if (!taskId) return;
-        this.taskDeleteId = taskId;
+    async deleteTask(taskItem: { loading: boolean, task: Task }) {
+        if (!taskItem.task.id) return;
+        this.taskItemDelete = taskItem;
         this.showConfirmDeleteTaskModal = true;
     }
 
     async onCloseConfirmDeleteTaskModal(modalValue: ModalCloseValue<any>) {
         this.showConfirmDeleteTaskModal = false;
-        if (modalValue.action === 'cancel' || !this.taskDeleteId) return;
+        if (modalValue.action === 'cancel' || !this.taskItemDelete || !this.taskItemDelete.task.id) return;
 
-        const result = await this.tasksService.deleteTask(this.taskDeleteId);
+        this.taskItemDelete.loading = true;
+        const result = await this.tasksService.deleteTask(this.taskItemDelete.task.id);
         if (result instanceof Error) {
             this.alertControllerService.showAlert(this.containerRef, result.message + '. Si ocurren mas errores, intenta recargar', 'error', 5000);
         } else {
             this.alertControllerService.showAlert(this.containerRef, 'Tarea eliminada correctamente', 'success', 2500);
+            const spliceIndex = this.tasksList.indexOf(this.taskItemDelete);
+            this.tasksList.splice(spliceIndex, 1);
         }
+        this.taskItemDelete.loading = false;
         this.getCurrentTaskPage();
     }
 
-    async markTask(complete: boolean, taskId?: string) {
-        if (!taskId) return;
-
-        const result = await this.tasksService.updateTask(taskId, { completed: complete });
+    async markTask(complete: boolean, taskItem: { loading: boolean, task: Task }) {
+        if (!taskItem.task.id) return;
+        taskItem.loading = true;
+        const result = await this.tasksService.updateTask(taskItem.task.id, { completed: complete });
         if (result instanceof Error) {
-            this.alertControllerService.showAlert(this.containerRef, result.message + '. Si ocurren mas errores, intenta recargar', 'error', 5000);
+            taskItem.task.completed = !complete;
+            this.alertControllerService.showAlert(this.containerRef, result.message + '. intenta recargar', 'error', 5000);
         }
-        this.getCurrentTaskPage();
+        if (this.filterOptionSelected.value === TaskFilterOptionValues.COMPLETED ||
+            this.filterOptionSelected.value === TaskFilterOptionValues.PENDING) {
+            this.getCurrentTaskPage(taskItem);
+            return;
+        }
+        taskItem.loading = false;
     }
 
 }
