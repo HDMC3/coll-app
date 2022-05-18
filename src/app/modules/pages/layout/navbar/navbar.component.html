@@ -57,8 +57,8 @@
             <button id="close-sidebar-button" class="btn btn-ghost btn-sm m-1"></button>
         </div>
         <div class="flex flex-col gap-2 px-2">
-            <a [routerLink]="['tasks']" routerLinkActive="btn-active" class="btn btn-outline btn-block">Tareas</a>
-            <a [routerLink]="['projects']" routerLinkActive="btn-active" class="btn btn-outline btn-block">Proyectos</a>
+            <a [routerLink]="['tasks']" routerLinkActive="btn-active" class="btn btn-outline btn-block" data-link="router-link" (click)="hiddeSidebar($event)">Tareas</a>
+            <a [routerLink]="['projects']" routerLinkActive="btn-active" class="btn btn-outline btn-block" data-link="router-link" (click)="hiddeSidebar($event)">Proyectos</a>
             <label class="swap swap-rotate pb-2 pt-4" (click)="toggleTheme()">
                 <svg [ngClass]="{'swap-on': theme === 'light', 'swap-off': theme === 'dark'}" class="fill-current w-10 h-10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path

@@ -54,9 +54,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.currentUserSubscription?.unsubscribe();
     }
 
-    hiddeSidebar(e: any) {
+    hiddeSidebar(e?: any) {
 
-        if (e.target?.classList?.contains('sidebar-container') || e.target?.id === 'close-sidebar-button') {
+        if (e.target?.classList?.contains('sidebar-container') || e.target?.id === 'close-sidebar-button' || e.target?.dataset['link'] === 'router-link') {
             this.showSidebarPanel = false;
             setTimeout(() => {
                 this.showSidebarContainer = false;
