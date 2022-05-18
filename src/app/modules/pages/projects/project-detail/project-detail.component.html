@@ -4,21 +4,30 @@
     </div>
 
     <div *ngIf="!loading && project" id="project-detail" class="flex flex-col pt-8 px-6 xs:px-16">
-        <div id="project-header" class="flex justify-between">
-            <h2 class="font-bold text-4xl">{{ project.name }}</h2>
-            <div class="flex items-center gap-2">
-                <button class="btn btn-primary btn-sm shadow">Editar proyecto</button>
-            </div>
+        <div id="project-header" class="flex justify-between flex-wrap">
+            <h2 class="font-bold text-4xl">
+                <button class="btn h-8 w-8 p-0 min-h-0" (click)="openEditProjectModal()">
+                    <svg class="h-6 w-6" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M9 16C9 12.134 12.134 9 16 9H42C43.6569 9 45 10.3431 45 12C45 13.6569 43.6569 15 42 15H16C15.4477 15 15 15.4477 15 16V42C15 43.6569 13.6569 45 12 45C10.3431 45 9 43.6569 9 42V16ZM68 33.9117C69.6569 33.9117 71 35.2549 71 36.9117V64C71 67.866 67.866 71 64 71H36.9117C35.2549 71 33.9117 69.6569 33.9117 68C33.9117 66.3431 35.2549 65 36.9117 65H64C64.5523 65 65 64.5523 65 64V36.9117C65 35.2549 66.3431 33.9117 68 33.9117ZM68.4001 23.139C69.9605 21.5786 69.9605 19.0488 68.4001 17.4884L62.7433 11.8315C61.1795 10.2677 58.644 10.2677 57.0802 11.8315L18.0554 50.8563C16.7709 52.1408 15.9618 53.8242 15.7612 55.6297L14.7983 64.2957C14.7258 64.9483 15.2772 65.4996 15.9297 65.4271L24.5957 64.4642C26.4012 64.2636 28.0846 63.4545 29.3691 62.17L68.4001 23.139ZM58.4968 33.0409L47.1893 21.7334L50.0178 18.905L61.3253 30.2125L58.4968 33.0409Z"
+                            fill="currentColor" />
+                    </svg>
+                </button>
+                {{ project.name }}
+            </h2>
         </div>
         <div class="divider my-2"></div>
         <div id="project-description" class="flex flex-col justify-between gap-4 md:flex-row">
-            <p class="text-lg max-w-xl">{{ project.description }}</p>
+            <p class="font-normal whitespace-pre-wrap text-lg max-w-xl">{{ project.description }}</p>
             <div class="flex flex-col gap-2 w-full md:max-w-sm">
                 <h3 class="text-xl font-bold">Miembros</h3>
                 <div class="flex gap-2 py-2 w-fit">
-                    <button class="btn btn-error btn-sm shadow" [disabled]="memberActionButtonsState.disabledDelete" (click)="deleteMembers()">Eliminar</button>
-                    <button class="btn btn-info btn-sm shadow" [disabled]="memberActionButtonsState.disabledEdit" (click)="openEditMemberModal()">Editar</button>
-                    <button class="btn btn-success btn-sm shadow" [disabled]="memberActionButtonsState.disabledNew" (click)="openNewMemberModal()">Nuevo</button>
+                    <button class="btn btn-error btn-sm shadow" [disabled]="memberActionButtonsState.disabledDelete"
+                        (click)="deleteMembers()">Eliminar</button>
+                    <button class="btn btn-info btn-sm shadow" [disabled]="memberActionButtonsState.disabledEdit"
+                        (click)="openEditMemberModal()">Editar</button>
+                    <button class="btn btn-success btn-sm shadow" [disabled]="memberActionButtonsState.disabledNew"
+                        (click)="openNewMemberModal()">Nuevo</button>
                 </div>
                 <div class="overflow-x-auto w-full shadow rounded-lg">
                     <table id="members-table" class="table table-sm table-zebra w-full">
@@ -26,17 +35,19 @@
                             <tr>
                                 <th class="bg-base-300">
                                     <label>
-                                        <input [(ngModel)]="generalMembersCheckValue" type="checkbox" class="checkbox" (ngModelChange)="onGeneralMembersCheckChange($event)" />
+                                        <input [(ngModel)]="generalMembersCheckValue" type="checkbox" class="checkbox"
+                                            (ngModelChange)="onGeneralMembersCheckChange($event)" />
                                     </label>
                                 </th>
                                 <th class="bg-base-300">Miembro</th>
                             </tr>
                         </thead>
-                        <tbody *ngIf="membersList.length > 0" >
+                        <tbody *ngIf="membersList.length > 0">
                             <tr *ngFor="let item of membersList; let i=index">
                                 <th class="py-2">
                                     <label>
-                                        <input [(ngModel)]="item.selected" type="checkbox" class="checkbox" (ngModelChange)="onMemberCheckChange($event, i)"/>
+                                        <input [(ngModel)]="item.selected" type="checkbox" class="checkbox"
+                                            (ngModelChange)="onMemberCheckChange($event, i)" />
                                     </label>
                                 </th>
                                 <td class="py-2">
@@ -47,7 +58,7 @@
                     </table>
                 </div>
                 <div *ngIf="membersList.length === 0" class="flex py-4 justify-center items-center w-full">
-                    <div  class="flex bg-base-100 shadow p-4 items-center justify-center w-full lg:w-9/12 rounded-lg">
+                    <div class="flex bg-base-100 shadow p-4 items-center justify-center w-full lg:w-9/12 rounded-lg">
                         <span class="text-base-content text-center text-lg font-bold">No se encontraron miembros</span>
                     </div>
                 </div>
@@ -62,9 +73,12 @@
 
         <div class="sm:px-8 lg:px-16">
             <div class="flex gap-2 py-2 w-fit">
-                <button class="btn btn-error btn-sm shadow" [disabled]="taskActionButtonsState.disabledDelete" (click)="deleteProjectTasks()">Eliminar</button>
-                <button class="btn btn-info btn-sm shadow" [disabled]="taskActionButtonsState.disabledEdit" (click)="openEditProjectTaskModal()">Editar</button>
-                <button class="btn btn-success btn-sm shadow" [disabled]="taskActionButtonsState.disabledNew" (click)="openNewProjectTaskModal()">Nueva</button>
+                <button class="btn btn-error btn-sm shadow" [disabled]="taskActionButtonsState.disabledDelete"
+                    (click)="deleteProjectTasks()">Eliminar</button>
+                <button class="btn btn-info btn-sm shadow" [disabled]="taskActionButtonsState.disabledEdit"
+                    (click)="openEditProjectTaskModal()">Editar</button>
+                <button class="btn btn-success btn-sm shadow" [disabled]="taskActionButtonsState.disabledNew"
+                    (click)="openNewProjectTaskModal()">Nueva</button>
             </div>
             <div class="overflow-x-auto w-full shadow rounded-lg">
                 <table id="tasks-table" class="table w-full">
@@ -72,7 +86,8 @@
                         <tr>
                             <th class="bg-base-300">
                                 <label>
-                                    <input [(ngModel)]="generalTasksCheckValue" type="checkbox" class="checkbox" (ngModelChange)="onGeneralTasksCheckChange($event)"/>
+                                    <input [(ngModel)]="generalTasksCheckValue" type="checkbox" class="checkbox"
+                                        (ngModelChange)="onGeneralTasksCheckChange($event)" />
                                 </label>
                             </th>
                             <th class="bg-base-300">Nombre</th>
@@ -85,14 +100,16 @@
                         <tr *ngFor="let item of projectTasksList">
                             <th>
                                 <label>
-                                    <input [(ngModel)]="item.selected" type="checkbox" class="checkbox" (ngModelChange)="onProjectTasksCheckChange()"/>
+                                    <input [(ngModel)]="item.selected" type="checkbox" class="checkbox"
+                                        (ngModelChange)="onProjectTasksCheckChange()" />
                                 </label>
                             </th>
                             <td>
                                 <div class="flex items-center space-x-3">
                                     <div>
                                         <div class="font-bold">{{ item.task.name }}</div>
-                                        <div class="text-sm opacity-50">{{ item.task.owner === null ? 'Sin encargardo' : item.task.owner }}</div>
+                                        <div class="text-sm opacity-50">{{ item.task.owner === null ? 'Sin encargardo' :
+                                            item.task.owner }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -116,7 +133,8 @@
                 </table>
             </div>
             <div *ngIf="projectTasksList.length === 0" class="flex py-4 justify-center items-center w-full">
-                <div  class="flex bg-base-100 p-4 items-center justify-center w-full md:w-96 xl:w-6/12 rounded-lg shadow">
+                <div
+                    class="flex bg-base-100 p-4 items-center justify-center w-full md:w-96 xl:w-6/12 rounded-lg shadow">
                     <span class="text-base-content text-lg font-bold">No se encontraron tareas</span>
                 </div>
             </div>
@@ -124,9 +142,18 @@
     </div>
 </div>
 
-<app-new-member-modal *ngIf="showNewMemberModal && project" [members]="project.members" (closeModal)="onCloseNewMemberModal($event)"></app-new-member-modal>
-<app-edit-member-modal *ngIf="showEditMemberModal && project" [members]="project.members" [member]="editMemberSelected" (closeModal)="onCloseEditMemberModal($event)"></app-edit-member-modal>
-<app-new-project-task-modal *ngIf="showNewProjectTaskModal && project" [membersProject]="project.members" (closeModal)="onCloseNewProjectTaskModal($event)"></app-new-project-task-modal>
-<app-confirm-modal *ngIf="showConfirmModalDeleteMembers" [message]="confirmModalMessage" (closeModal)="onCloseDeleteMembersConfirmModal($event)"></app-confirm-modal>
-<app-confirm-modal *ngIf="showConfirmModalDeleteProjectTasks" [message]="confirmModalMessage" (closeModal)="onCloseDeleteProjectTasksConfirmModal($event)"></app-confirm-modal>
-<app-edit-project-task-modal *ngIf="showEditProjectTaskModal && project" [members]="project.members" [projectTask]="projectTaskSelectedToEdit" (closeModal)="onCloseEditProjectTaskModal($event)"></app-edit-project-task-modal>
+<app-new-member-modal *ngIf="showNewMemberModal && project" [members]="project.members"
+    (closeModal)="onCloseNewMemberModal($event)"></app-new-member-modal>
+<app-edit-member-modal *ngIf="showEditMemberModal && project" [members]="project.members" [member]="editMemberSelected"
+    (closeModal)="onCloseEditMemberModal($event)"></app-edit-member-modal>
+<app-new-project-task-modal *ngIf="showNewProjectTaskModal && project" [membersProject]="project.members"
+    (closeModal)="onCloseNewProjectTaskModal($event)"></app-new-project-task-modal>
+<app-confirm-modal *ngIf="showConfirmModalDeleteMembers" [message]="confirmModalMessage"
+    (closeModal)="onCloseDeleteMembersConfirmModal($event)"></app-confirm-modal>
+<app-confirm-modal *ngIf="showConfirmModalDeleteProjectTasks" [message]="confirmModalMessage"
+    (closeModal)="onCloseDeleteProjectTasksConfirmModal($event)"></app-confirm-modal>
+<app-edit-project-task-modal *ngIf="showEditProjectTaskModal && project" [members]="project.members"
+    [projectTask]="projectTaskSelectedToEdit" (closeModal)="onCloseEditProjectTaskModal($event)">
+</app-edit-project-task-modal>
+<app-edit-project-modal *ngIf="showEditProjectModal" [project]="project" (closeModal)="onCloseEditProjectModal($event)">
+</app-edit-project-modal>

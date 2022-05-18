@@ -46,6 +46,7 @@ export class ProjectDetailComponent implements OnInit {
     showConfirmModalDeleteProjectTasks: boolean;
     showEditProjectTaskModal: boolean;
     projectTaskSelectedToEdit?: ProjectTask;
+    showEditProjectModal: boolean;
 
     constructor(
         private activateRoute: ActivatedRoute,
@@ -70,6 +71,7 @@ export class ProjectDetailComponent implements OnInit {
         this.showNewProjectTaskModal = false;
         this.showConfirmModalDeleteProjectTasks = false;
         this.showEditProjectTaskModal = false;
+        this.showEditProjectModal = false;
     }
 
     ngOnInit() {
@@ -368,5 +370,26 @@ export class ProjectDetailComponent implements OnInit {
                 break;
             }
         }
+    }
+
+    openEditProjectModal() {
+        this.showEditProjectModal = true;
+    }
+
+    onCloseEditProjectModal(modalValue: ModalCloseValue<Partial<Project>>) {
+        this.showEditProjectModal = false;
+        if (modalValue.action === 'cancel' || !modalValue.value || !this.project || !this.project.id) return;
+
+        const result = this.projectService.updateProject(modalValue.value, this.project.id);
+
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Cambios guardados con exito', 'success', 2000);
+        this.project.name = modalValue.value.name ?? this.project.name;
+        this.project.description = modalValue.value.description ?? this.project.description;
+        this.project.completed = modalValue.value.completed ?? this.project.completed;
     }
 }
