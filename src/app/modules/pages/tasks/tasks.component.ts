@@ -41,11 +41,13 @@ export class TasksComponent implements OnInit {
     showNewTaskModal: boolean;
     showEditTaskModal: boolean;
     showConfirmDeleteTaskModal: boolean;
+    showTaskDetailModal: boolean;
 
     taskSelectedToEdit?: Task;
     taskItemEdited?: { loading: boolean, task: Task };
 
     taskItemDelete?: { loading: boolean, task: Task };
+    taskSelectedToDetail?: Task;
 
     constructor(private tasksService: TasksService, private alertControllerService: AlertControllerService, private containerRef: ViewContainerRef) {
         this.tasksList = [];
@@ -70,6 +72,7 @@ export class TasksComponent implements OnInit {
         this.showNewTaskModal = false;
         this.showEditTaskModal = false;
         this.showConfirmDeleteTaskModal = false;
+        this.showTaskDetailModal = false;
     }
 
     ngOnInit(): void {
@@ -246,6 +249,17 @@ export class TasksComponent implements OnInit {
             return;
         }
         taskItem.loading = false;
+    }
+
+    openTaskDetailModal(event: any, task: Task) {
+        const preventElement = event.path?.find((el: any) => el instanceof HTMLButtonElement || el instanceof HTMLInputElement);
+        if (preventElement) return;
+        this.taskSelectedToDetail = task;
+        this.showTaskDetailModal = true;
+    }
+
+    onCloseTaskDetailModal() {
+        this.showTaskDetailModal = false;
     }
 
 }

@@ -1,5 +1,6 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localeES from '@angular/common/locales/es-GT';
 
 import { TasksRoutingModule } from './tasks-routing.module';
 import { TasksComponent } from './tasks.component';
@@ -9,6 +10,7 @@ import { EditTaskModalComponent } from './components/edit-task-modal/edit-task-m
 import { SharedModule } from 'src/app/shared/shared.module';
 import { TaskDetailModalComponent } from './components/task-detail-modal/task-detail-modal.component';
 
+registerLocaleData(localeES, 'es-GT');
 
 @NgModule({
     declarations: [
@@ -23,6 +25,12 @@ import { TaskDetailModalComponent } from './components/task-detail-modal/task-de
         ReactiveFormsModule,
         TasksRoutingModule,
         SharedModule
+    ],
+    providers: [
+        {
+            provide: LOCALE_ID,
+            useValue: 'es-GT'
+        }
     ]
 })
 export class TasksModule { }

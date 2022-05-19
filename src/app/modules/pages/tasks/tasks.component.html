@@ -63,12 +63,12 @@
     class="tasks-container flex gap-6 pt-8 pb-16 px-4 sm:px-16 flex-wrap justify-evenly">
 
     <div *ngFor="let item of tasksList"
-        class="card hover:shadow-lg b bg-base-100 shadow cursor-pointer w-11/12 sm:w-60 md:w-72 lg:w-80 xl:w-96">
+        class="card hover:shadow-lg b bg-base-100 shadow cursor-pointer w-11/12 sm:w-60 md:w-72 lg:w-80 xl:w-96" (click)="openTaskDetailModal($event, item.task)">
         <div class="card-body card gap-2 px-6 pt-6 pb-4">
             <div class="card-title justify-between">
                 <p class="inline-block">
                     <input [(ngModel)]="item.task.completed" [disabled]="item.loading" (ngModelChange)="markTask($event, item)" type="checkbox" class="checkbox" style="transform: translateY(4px);"/>
-                    {{ item.task.name }}
+                    {{ item.task.name | maxLength: 30}}
                 </p>
                 <div *ngIf="item.task.priority !== 3"
                     [ngClass]="{'badge-error': item.task.priority === 0, 'badge-warning': item.task.priority === 1, 'badge-success': item.task.priority === 2}"
@@ -120,3 +120,4 @@
 </app-edit-task-modal>
 <app-confirm-modal (closeModal)="onCloseConfirmDeleteTaskModal($event)" *ngIf="showConfirmDeleteTaskModal"
     [message]="'Esta seguro de eliminar la tarea?'"></app-confirm-modal>
+<app-task-detail-modal (closeModal)="onCloseTaskDetailModal()" *ngIf="showTaskDetailModal && taskSelectedToDetail" [task]="taskSelectedToDetail"></app-task-detail-modal>
