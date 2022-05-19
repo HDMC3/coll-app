@@ -22,13 +22,13 @@ const routes: Routes = [
             },
             {
                 path: '**',
-                redirectTo: 'tasks'
+                redirectTo: 'not-found'
             }
         ]
     },
     {
         path: '**',
-        redirectTo: ''
+        redirectTo: 'not-found'
     }
 ];
 
