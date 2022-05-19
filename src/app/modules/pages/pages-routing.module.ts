@@ -1,11 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PagesComponent } from './pages.component';
+import { AngularFireAuthGuard, redirectUnauthorizedTo } from '@angular/fire/compat/auth-guard';
+
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['auth', 'login']);
 
 const routes: Routes = [
     {
         path: '',
         component: PagesComponent,
+        canActivate: [AngularFireAuthGuard],
+        data: { authGuardPipe: redirectUnauthorizedToLogin },
         children: [
             {
                 path: 'tasks',
@@ -14,8 +19,16 @@ const routes: Routes = [
             {
                 path: 'projects',
                 loadChildren: () => import('./projects/projects.module').then(m => m.ProjectsModule)
+            },
+            {
+                path: '**',
+                redirectTo: 'tasks'
             }
         ]
+    },
+    {
+        path: '**',
+        redirectTo: ''
     }
 ];
 

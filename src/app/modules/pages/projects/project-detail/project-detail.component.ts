@@ -93,12 +93,10 @@ export class ProjectDetailComponent implements OnInit {
             next: projectData => {
                 if (projectData.project instanceof Error) {
                     const err = projectData.project;
-                    console.log('Proyecto');
                     this.alertController.showAlert(this.containerRef, err.message ? err.message : 'Problema al cargar el proyecto', 'error', 3000);
                     this.loading = false;
                 } else if (projectData.projectTasks instanceof Error) {
                     const err = projectData.projectTasks;
-                    console.log('Tareas de proyecto');
                     this.alertController.showAlert(this.containerRef, err.message ? err.message : 'Problema al cargar las tareas', 'error', 3000);
                     this.loading = false;
                 } else {
