@@ -1,11 +1,13 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Timestamp } from 'firebase/firestore';
 import { forkJoin, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 import { TaskPriorityValues } from 'src/app/core/enums';
 import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ProjectsService } from 'src/app/core/services/projects.service';
 
 @Component({
@@ -25,6 +27,7 @@ export class ProjectDetailMemberComponent implements OnInit {
     constructor(
         private activateRoute: ActivatedRoute,
         private projectService: ProjectsService,
+        private authService: AuthService,
         private alertController: AlertControllerService,
         private containerRef: ViewContainerRef
     ) {
@@ -102,6 +105,28 @@ export class ProjectDetailMemberComponent implements OnInit {
         if (priorityValue === TaskPriorityValues.LOW) return 'badge-success';
 
         return '';
+    }
+
+    get user() {
+        return this.authService.currentUser;
+    }
+
+    async completeProjectTask(projectTask: ProjectTask, completed: boolean, btnRef: any) {
+        if (!this.project?.id) return;
+        const taskUpdated: Partial<ProjectTask> = {
+            id: projectTask.id,
+            completed,
+            completation_date: completed ? Timestamp.now() : null
+        };
+        btnRef.disabled = true;
+        const result = await this.projectService.updateProjectTask(taskUpdated, this.project?.id);
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+        btnRef.disabled = false;
+        projectTask.completed = completed;
+        projectTask.creation_date = Timestamp.now();
     }
 
 }
