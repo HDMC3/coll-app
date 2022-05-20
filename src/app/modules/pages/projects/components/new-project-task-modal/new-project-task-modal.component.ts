@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { take } from 'rxjs';
@@ -10,24 +9,14 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { ProjectsService } from 'src/app/core/services/projects.service';
 import { UserInfo } from '@angular/fire/auth';
 import { Timestamp } from 'firebase/firestore';
+import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 
 @Component({
     selector: 'app-new-project-task-modal',
     templateUrl: './new-project-task-modal.component.html',
     styleUrls: ['./new-project-task-modal.component.scss'],
     animations: [
-        trigger('hiddeModal', [
-            transition(':leave', [
-                style({
-                    opacity: '1',
-                    visibility: 'visible'
-                }),
-                animate('0.15s', style({
-                    opacity: '0',
-                    visibility: 'hidden'
-                }))
-            ])
-        ])
+        hiddeModalAnimation
     ]
 })
 export class NewProjectTaskModalComponent implements OnInit {

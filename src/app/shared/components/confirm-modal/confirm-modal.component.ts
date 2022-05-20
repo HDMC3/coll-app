@@ -1,5 +1,5 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewInit, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 
 @Component({
@@ -7,18 +7,7 @@ import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.inter
     templateUrl: './confirm-modal.component.html',
     styleUrls: ['./confirm-modal.component.scss'],
     animations: [
-        trigger('hiddeModal', [
-            transition(':leave', [
-                style({
-                    opacity: '1',
-                    visibility: 'visible'
-                }),
-                animate('0.15s', style({
-                    opacity: '0',
-                    visibility: 'hidden'
-                }))
-            ])
-        ])
+        hiddeModalAnimation
     ]
 })
 export class ConfirmModalComponent implements AfterViewInit {

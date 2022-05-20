@@ -1,7 +1,7 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, HostBinding, OnInit, Output, EventEmitter, Input, HostListener } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
+import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 import { TaskPriorityValues } from 'src/app/core/enums';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
@@ -12,18 +12,7 @@ import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
     templateUrl: './edit-project-task-modal.component.html',
     styleUrls: ['./edit-project-task-modal.component.scss'],
     animations: [
-        trigger('hiddeModal', [
-            transition(':leave', [
-                style({
-                    opacity: '1',
-                    visibility: 'visible'
-                }),
-                animate('0.15s', style({
-                    opacity: '0',
-                    visibility: 'hidden'
-                }))
-            ])
-        ])
+        hiddeModalAnimation
     ]
 })
 export class EditProjectTaskModalComponent implements OnInit {

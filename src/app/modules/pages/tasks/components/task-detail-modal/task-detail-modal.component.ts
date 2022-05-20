@@ -1,5 +1,5 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnInit, Output } from '@angular/core';
+import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 import { Task } from 'src/app/core/interfaces/task.interface';
 
 @Component({
@@ -7,18 +7,7 @@ import { Task } from 'src/app/core/interfaces/task.interface';
     templateUrl: './task-detail-modal.component.html',
     styleUrls: ['./task-detail-modal.component.scss'],
     animations: [
-        trigger('hiddeModal', [
-            transition(':leave', [
-                style({
-                    opacity: '1',
-                    visibility: 'visible'
-                }),
-                animate('0.15s', style({
-                    opacity: '0',
-                    visibility: 'hidden'
-                }))
-            ])
-        ])
+        hiddeModalAnimation
     ]
 })
 export class TaskDetailModalComponent implements OnInit {

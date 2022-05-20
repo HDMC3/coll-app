@@ -1,8 +1,8 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, HostBinding, OnInit, Output, EventEmitter, HostListener, Input } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserInfo } from 'firebase/auth';
 import { take } from 'rxjs/operators';
+import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { AuthService } from 'src/app/core/services/auth.service';
 
@@ -11,18 +11,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
     templateUrl: './new-member-modal.component.html',
     styleUrls: ['./new-member-modal.component.scss'],
     animations: [
-        trigger('hiddeModal', [
-            transition(':leave', [
-                style({
-                    opacity: '1',
-                    visibility: 'visible'
-                }),
-                animate('0.15s', style({
-                    opacity: '0',
-                    visibility: 'hidden'
-                }))
-            ])
-        ])
+        hiddeModalAnimation
     ]
 })
 export class NewMemberModalComponent implements OnInit {

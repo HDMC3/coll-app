@@ -1,7 +1,7 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, HostBinding, OnInit, EventEmitter, Output, Input, HostListener } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
+import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 
@@ -10,18 +10,7 @@ import { Project } from 'src/app/core/interfaces/project.interface';
     templateUrl: './edit-project-modal.component.html',
     styleUrls: ['./edit-project-modal.component.scss'],
     animations: [
-        trigger('hiddeModal', [
-            transition(':leave', [
-                style({
-                    opacity: '1',
-                    visibility: 'visible'
-                }),
-                animate('0.15s', style({
-                    opacity: '0',
-                    visibility: 'hidden'
-                }))
-            ])
-        ])
+        hiddeModalAnimation
     ]
 })
 export class EditProjectModalComponent implements OnInit {

@@ -1,26 +1,12 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
+import { showAlertAnimation } from 'src/app/core/animations/show-alert.animation';
 
 @Component({
     selector: 'app-alert',
     templateUrl: './alert.component.html',
     styleUrls: ['./alert.component.scss'],
     animations: [
-        trigger('toggleAlert', [
-            transition(':enter', [
-                style({
-                    opacity: '0',
-                    transform: 'scale(0.9)'
-                }),
-                animate('0.1s', style({
-                    opacity: '1',
-                    transform: 'scale(1.1)'
-                })),
-                animate('0.1s', style({
-                    transform: 'scale(1)'
-                }))
-            ])
-        ])
+        showAlertAnimation
     ]
 })
 export class AlertComponent {
