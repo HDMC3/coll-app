@@ -23,3 +23,12 @@
     border-radius: 20px;
     border: 4px solid hsl(var(--b2));
 }
+
+textarea.invalid, input.invalid, select.invalid, textarea.invalid:focus, input.invalid:focus, select.invalid:focus {
+    border: 1px solid #e84118;
+    outline: 2px solid #e84118;
+}
+
+span.invalid {
+    color: #e84118
+}
