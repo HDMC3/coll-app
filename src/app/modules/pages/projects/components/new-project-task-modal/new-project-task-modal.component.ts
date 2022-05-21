@@ -10,6 +10,7 @@ import { ProjectsService } from 'src/app/core/services/projects.service';
 import { UserInfo } from '@angular/fire/auth';
 import { Timestamp } from 'firebase/firestore';
 import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
+import { FormValidators } from 'src/app/core/form-validators';
 
 @Component({
     selector: 'app-new-project-task-modal',
@@ -45,8 +46,8 @@ export class NewProjectTaskModalComponent implements OnInit {
         private projectService: ProjectsService,
         private authService: AuthService
     ) {
-        this.nameFormControl = new FormControl('', [Validators.required, this.noEmpty]);
-        this.descriptionFormControl = new FormControl('', [Validators.required, this.noEmpty]);
+        this.nameFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
+        this.descriptionFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
         this.priorityFormControl = new FormControl(TaskPriorityValues.NO_PRIORITY, [Validators.required]);
         this.ownerFormControl = new FormControl(null);
         this.projectTaskForm = new FormGroup({
@@ -100,16 +101,6 @@ export class NewProjectTaskModalComponent implements OnInit {
 
     close() {
         this.closeModal.emit({ action: 'cancel' });
-    }
-
-    noEmpty(control: FormControl) {
-        if (control.value.replace(/\s/g, '').length === 0) {
-            return {
-                empty: true
-            };
-        }
-
-        return null;
     }
 
 }

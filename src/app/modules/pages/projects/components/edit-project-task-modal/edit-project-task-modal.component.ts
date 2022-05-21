@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
 import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
 import { TaskPriorityValues } from 'src/app/core/enums';
+import { FormValidators } from 'src/app/core/form-validators';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { SelectOption } from 'src/app/core/interfaces/select-option.interface';
@@ -38,8 +39,8 @@ export class EditProjectTaskModalComponent implements OnInit {
     ];
 
     constructor() {
-        this.nameFormControl = new FormControl('', [Validators.required, this.noEmpty]);
-        this.descriptionFormControl = new FormControl('', [Validators.required, this.noEmpty]);
+        this.nameFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
+        this.descriptionFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
         this.priorityFormControl = new FormControl(TaskPriorityValues.NO_PRIORITY, [Validators.required]);
         this.ownerFormControl = new FormControl(null);
         this.completedFormControl = new FormControl(false);
@@ -95,15 +96,6 @@ export class EditProjectTaskModalComponent implements OnInit {
                 completation_date: this.completedFormControl.value ? Timestamp.now() : null
             }
         });
-    }
-
-    noEmpty(control: FormControl) {
-        if (control.value.replace(/\s/g, '').length === 0) {
-            return {
-                empty: true
-            };
-        }
-        return null;
     }
 
 }

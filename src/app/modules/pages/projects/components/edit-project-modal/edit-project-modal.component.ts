@@ -2,6 +2,7 @@ import { Component, HostBinding, OnInit, EventEmitter, Output, Input, HostListen
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
 import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
+import { FormValidators } from 'src/app/core/form-validators';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 
@@ -26,8 +27,8 @@ export class EditProjectModalComponent implements OnInit {
     projectForm: FormGroup;
 
     constructor() {
-        this.nameFormControl = new FormControl('', [Validators.required, this.noEmpty]);
-        this.descriptionFormControl = new FormControl('', [Validators.required, this.noEmpty]);
+        this.nameFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
+        this.descriptionFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
         this.completedFormControl = new FormControl(false, [Validators.required]);
         this.projectForm = new FormGroup({
             name: this.nameFormControl,
@@ -59,15 +60,6 @@ export class EditProjectModalComponent implements OnInit {
         if (event.target.classList.contains('modal')) {
             this.closeModal.emit({ action: 'cancel' });
         }
-    }
-
-    noEmpty(control: FormControl) {
-        if (control.value.replace(/\s/g, '').length === 0) {
-            return {
-                empty: true
-            };
-        }
-        return null;
     }
 
     saveProject() {

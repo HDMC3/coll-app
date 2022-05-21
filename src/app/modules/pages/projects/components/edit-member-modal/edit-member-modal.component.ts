@@ -1,8 +1,9 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnInit, Output } from '@angular/core';
 import { UserInfo } from '@angular/fire/auth';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { take } from 'rxjs/operators';
 import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
+import { FormValidators } from 'src/app/core/form-validators';
 import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.interface';
 import { AuthService } from 'src/app/core/services/auth.service';
 
@@ -30,9 +31,8 @@ export class EditMemberModalComponent implements OnInit {
     constructor(private authService: AuthService) {
         this.formMemberControl = new FormControl('', [
             Validators.required,
-            this.noEmpty,
-            Validators.pattern(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/),
-            this.noRepeatMember
+            FormValidators.noEmpty,
+            Validators.pattern(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)
         ]);
 
         this.formNewMember = new FormGroup({
@@ -48,6 +48,7 @@ export class EditMemberModalComponent implements OnInit {
 
     ngOnInit() {
         this.formMemberControl.setValue(this.member ? this.member : '');
+        this.formMemberControl.addValidators(FormValidators.noRepeatMember(this.members));
         setTimeout(() => {
             this.modalClass += ' modal-open';
         }, 50);
@@ -70,25 +71,4 @@ export class EditMemberModalComponent implements OnInit {
         const memberValue = this.formMemberControl.value;
         this.closeModal.emit({ action: 'ok', value: memberValue });
     }
-
-    noEmpty(control: FormControl) {
-        if (control.value.replace(/\s/g, '').length === 0) {
-            return {
-                empty: true
-            };
-        }
-
-        return null;
-    }
-
-    noRepeatMember = (control: AbstractControl) => {
-        const repeatMember = this.members.find(m => m === control.value && m !== this.member);
-        if (repeatMember) {
-            return {
-                memberExist: true
-            };
-        }
-        return null;
-    };
-
 }

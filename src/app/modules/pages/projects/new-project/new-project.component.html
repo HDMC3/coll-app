@@ -17,8 +17,13 @@
             <label class="label">
                 <span class="label-text font-bold">Descripcion</span>
             </label>
-            <textarea formControlName="description" class="textarea textarea-bordered h-24 max-h-28"
+            <textarea formControlName="description" class="textarea textarea-bordered h-24 max-h-28" [ngClass]="{'invalid': descriptionFormControl?.invalid && descriptionFormControl?.dirty}"
                 style="line-height: 1.35em;" placeholder="Describe tu proyecto..."></textarea>
+            <label *ngIf="descriptionFormControl?.invalid && descriptionFormControl?.dirty" class="label">
+                <span class="label-text-alt"
+                    [ngClass]="{'invalid': descriptionFormControl?.invalid && descriptionFormControl?.dirty}">La descripcion es
+                    requerido</span>
+            </label>
         </div>
     </form>
 

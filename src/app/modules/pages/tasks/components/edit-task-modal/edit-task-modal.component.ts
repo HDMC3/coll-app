@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { take } from 'rxjs/operators';
 import { Timestamp } from 'firebase/firestore';
 import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
+import { FormValidators } from 'src/app/core/form-validators';
 
 @Component({
     selector: 'app-edit-task-modal',
@@ -43,7 +44,7 @@ export class EditTaskModalComponent implements OnInit {
     loading: boolean;
 
     constructor(private authService: AuthService) {
-        this.nameFormControl = new FormControl(this.task ? this.task.name : '', [Validators.required]);
+        this.nameFormControl = new FormControl(this.task ? this.task.name : '', [Validators.required, FormValidators.noEmpty]);
         this.descriptionFormControl = new FormControl(this.task ? this.task.description : '');
         this.priorityFormControl = new FormControl(this.task ? this.task.priority : TaskPriorityValues.NO_PRIORITY, [Validators.required]);
         this.completedFormControl = new FormControl(this.task ? this.task.completed : false, [Validators.required]);

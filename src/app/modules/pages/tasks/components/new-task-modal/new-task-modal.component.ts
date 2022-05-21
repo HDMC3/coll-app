@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { Timestamp } from 'firebase/firestore';
 import { take } from 'rxjs';
 import { hiddeModalAnimation } from 'src/app/core/animations/hidde-modal.animation';
+import { FormValidators } from 'src/app/core/form-validators';
 
 @Component({
     selector: 'app-new-task-modal',
@@ -39,7 +40,7 @@ export class NewTaskModalComponent implements OnInit {
     currentUser?: UserInfo;
 
     constructor(private authService: AuthService) {
-        this.nameFormControl = new FormControl('', [Validators.required, this.noEmpty]);
+        this.nameFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
         this.descriptionFormControl = new FormControl('');
         this.priorityFormControl = new FormControl(TaskPriorityValues.NO_PRIORITY, [Validators.required]);
 
@@ -90,16 +91,6 @@ export class NewTaskModalComponent implements OnInit {
             action: 'ok',
             value: newTask
         });
-    }
-
-    noEmpty(control: FormControl) {
-        if (control.value.replace(/\s/g, '').length === 0) {
-            return {
-                empty: true
-            };
-        }
-
-        return null;
     }
 
 }

@@ -1,5 +1,5 @@
 import { Component, HostBinding, OnInit, ViewContainerRef } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
 import { take } from 'rxjs';
 import { Project } from 'src/app/core/interfaces/project.interface';
@@ -8,6 +8,7 @@ import { ProjectsService } from 'src/app/core/services/projects.service';
 import { UserInfo } from '@angular/fire/auth';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
 import { Router } from '@angular/router';
+import { FormValidators } from 'src/app/core/form-validators';
 
 @Component({
     selector: 'app-new-project',
@@ -32,8 +33,8 @@ export class NewProjectComponent implements OnInit {
         private router: Router,
         private containerRef: ViewContainerRef
     ) {
-        this.nameFormControl = new FormControl('', [Validators.required]);
-        this.descriptionFormControl = new FormControl('');
+        this.nameFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
+        this.descriptionFormControl = new FormControl('', [Validators.required, FormValidators.noEmpty]);
         this.newProjectForm = new FormGroup({
             name: this.nameFormControl,
             description: this.descriptionFormControl
@@ -43,8 +44,7 @@ export class NewProjectComponent implements OnInit {
 
         this.membersProjectForm = new FormGroup({
             member: new FormControl('', [
-                Validators.pattern(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/),
-                this.noRepeatMember
+                Validators.pattern(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)
             ])
         });
     }
@@ -53,6 +53,8 @@ export class NewProjectComponent implements OnInit {
         this.authService.currentUser.pipe(take(1)).subscribe(user => {
             this.user = user;
         });
+
+        this.membersProjectForm.get('member')?.addValidators(FormValidators.noRepeatMember(this.members));
     }
 
     addMember() {
@@ -67,16 +69,6 @@ export class NewProjectComponent implements OnInit {
     removeMember(index: number) {
         this.members.splice(index, 1);
     }
-
-    noRepeatMember = (control: AbstractControl) => {
-        const repeatMember = this.members.find(m => m === control.value);
-        if (repeatMember) {
-            return {
-                memberExist: true
-            };
-        }
-        return null;
-    };
 
     async saveProject() {
         if (this.newProjectForm.invalid) {
