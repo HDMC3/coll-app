@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { AngularFireAuthGuard, redirectLoggedInTo } from '@angular/fire/compat/auth-guard';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
+import { LoginComponent } from './login/login.component';
 
 const redirectLoggedInToTasks = () => redirectLoggedInTo(['app', 'tasks']);
 
