@@ -33,6 +33,9 @@
                             class="btn btn-primary">Registrar</button>
                     </div>
                 </form>
+                <div class="pt-3">
+                    <span class="text-sm text-slate-500">Ya tienes una cuenta? <a [routerLink]="['/auth', 'login']" class="link link-secondary">Inicia sesion</a></span>
+                </div>
                 <div *ngIf="failedRegister" class="alert alert-error">
                     <div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6"

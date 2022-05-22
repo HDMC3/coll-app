@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormValidators } from 'src/app/core/form-validators';
@@ -9,7 +9,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
 
     emailControl: FormControl;
     passwordControl: FormControl;
@@ -33,9 +33,6 @@ export class RegisterComponent implements OnInit {
         this.disableRegisterButton = false;
         this.failedRegister = false;
         this.failedRegisterMessage = 'Problema al registrar usuario';
-    }
-
-    ngOnInit(): void {
     }
 
     async register() {
