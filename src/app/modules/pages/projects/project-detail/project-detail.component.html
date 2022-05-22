@@ -23,88 +23,8 @@
         </div>
     </div>
 
-    <div *ngIf="!loading && project" id="project-tasks" class="flex flex-col pt-10 pb-8 px-6 xs:px-16">
-        <h3 class="font-bold text-2xl">Tareas del proyecto</h3>
-
-        <div class="divider mt-2 mb-6"></div>
-
-        <div class="sm:px-8 lg:px-16">
-            <div class="flex gap-2 py-2 w-fit">
-                <button class="btn btn-error btn-sm shadow" [disabled]="taskActionButtonsState.disabledDelete"
-                    (click)="deleteProjectTasks()">Eliminar</button>
-                <button class="btn btn-info btn-sm shadow" [disabled]="taskActionButtonsState.disabledEdit"
-                    (click)="openEditProjectTaskModal()">Editar</button>
-                <button class="btn btn-success btn-sm shadow" [disabled]="taskActionButtonsState.disabledNew"
-                    (click)="openNewProjectTaskModal()">Nueva</button>
-            </div>
-            <div class="overflow-x-auto w-full shadow rounded-lg">
-                <table id="tasks-table" class="table w-full">
-                    <thead>
-                        <tr>
-                            <th class="bg-base-300">
-                                <label>
-                                    <input [(ngModel)]="generalTasksCheckValue" type="checkbox" class="checkbox"
-                                        (ngModelChange)="onGeneralTasksCheckChange($event)" />
-                                </label>
-                            </th>
-                            <th class="bg-base-300">Nombre</th>
-                            <th class="bg-base-300">Descripcion</th>
-                            <th class="bg-base-300">Prioridad</th>
-                            <th class="bg-base-300"></th>
-                        </tr>
-                    </thead>
-                    <tbody *ngIf="projectTasksList.length > 0">
-                        <tr *ngFor="let item of projectTasksList">
-                            <th>
-                                <label>
-                                    <input [(ngModel)]="item.selected" type="checkbox" class="checkbox"
-                                        (ngModelChange)="onProjectTasksCheckChange()" />
-                                </label>
-                            </th>
-                            <td>
-                                <div class="flex items-center space-x-3">
-                                    <div>
-                                        <div class="font-bold">{{ item.task.name }}</div>
-                                        <div class="text-sm opacity-50">{{ item.task.owner === null ? 'Sin encargardo' :
-                                            item.task.owner }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="w-80 md:w-auto">
-                                    <p class="whitespace-pre-wrap">
-                                        {{ item.task.description }}
-                                    </p>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge" [ngClass]="getPriorityBageColor(item.task.priority)">
-                                    {{ getPriorityText(item.task.priority) }}
-                                </span>
-                            </td>
-                            <th>
-                                <button class="btn btn-ghost btn-xs">Detalles</button>
-                            </th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div *ngIf="projectTasksList.length === 0" class="flex py-4 justify-center items-center w-full">
-                <div
-                    class="flex bg-base-100 p-4 items-center justify-center w-full md:w-96 xl:w-6/12 rounded-lg shadow">
-                    <span class="text-base-content text-lg font-bold">No se encontraron tareas</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <app-project-tasks-list *ngIf="!loading && project" [project]="project" [projectTasksList]="projectTasksList" [projectTasks]="projectTasks"></app-project-tasks-list>
 </div>
 
-<app-new-project-task-modal *ngIf="showNewProjectTaskModal && project" [membersProject]="project.members"
-    (closeModal)="onCloseNewProjectTaskModal($event)"></app-new-project-task-modal>
-<app-confirm-modal *ngIf="showConfirmModalDeleteProjectTasks" [message]="confirmModalMessage"
-    (closeModal)="onCloseDeleteProjectTasksConfirmModal($event)"></app-confirm-modal>
-<app-edit-project-task-modal *ngIf="showEditProjectTaskModal && project" [members]="project.members"
-    [projectTask]="projectTaskSelectedToEdit" (closeModal)="onCloseEditProjectTaskModal($event)">
-</app-edit-project-task-modal>
 <app-edit-project-modal *ngIf="showEditProjectModal" [project]="project" (closeModal)="onCloseEditProjectModal($event)">
 </app-edit-project-modal>

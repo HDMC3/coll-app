@@ -68,40 +68,24 @@ export class ProjectMembersListComponent {
         this.generalMembersCheckValue = selectedMembers === this.membersList.length;
     }
 
-    deleteMembers() {
-        this.showConfirmModalDeleteMembers = true;
-        this.confirmModalMessage = 'Se eliminaran los miembros seleccionados, desea continuar?';
+    openNewMemberModal() {
+        this.showNewMemberModal = true;
     }
 
-    async onCloseDeleteMembersConfirmModal(modalValue: ModalCloseValue<any>) {
-        this.showConfirmModalDeleteMembers = false;
-        const membersSelected = this.membersList.filter(item => item.selected);
-        if (modalValue.action !== 'ok' || membersSelected.length === 0 || !this.project || !this.project.id) return;
+    async onCloseNewMemberModal(modalValue: ModalCloseValue<string>) {
+        this.showNewMemberModal = false;
+        if (modalValue.action === 'ok' && modalValue.value && this.project && this.project.id) {
+            const newMembers = this.membersList.map(item => item.member).concat([modalValue.value]);
+            const result = await this.projectService.updateProject({ members: newMembers }, this.project.id);
 
-        const newMembers = this.membersList.filter(item => !item.selected);
-        const deletedMembers = this.membersList.filter(item => item.selected);
-        const result = await this.projectMembersService.deleteMembers(newMembers.map(item => item.member), deletedMembers.map(item => item.member), this.project.id);
-        if (result instanceof Error) {
-            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
-            return;
-        }
-
-        this.alertController.showAlert(this.containerRef, 'Miembro(s) eliminado(s) con exito', 'success', 2000);
-        this.memberActionButtonsState = {
-            disabledEdit: true,
-            disabledDelete: true,
-            disabledNew: false
-        };
-        for (const item of this.projectTasksList) {
-            if (item.task.owner && deletedMembers.map(item => item.member).includes(item.task.owner)) {
-                item.task.owner = null;
+            if (result instanceof Error) {
+                this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            } else {
+                this.alertController.showAlert(this.containerRef, 'Miembro agregado con exito', 'success', 2000);
+                this.membersList.push({ selected: false, member: modalValue.value });
+                this.project.members.push(modalValue.value);
             }
         }
-        this.generalMembersCheckValue = false;
-        this.membersList.length = 0;
-        this.membersList = newMembers;
-        this.project.members.length = 0;
-        this.project.members = newMembers.map(item => item.member);
     }
 
     openEditMemberModal() {
@@ -153,24 +137,40 @@ export class ProjectMembersListComponent {
         memberSelected.member = modalValue.value;
     }
 
-    openNewMemberModal() {
-        this.showNewMemberModal = true;
+    deleteMembers() {
+        this.showConfirmModalDeleteMembers = true;
+        this.confirmModalMessage = 'Se eliminaran los miembros seleccionados, desea continuar?';
     }
 
-    async onCloseNewMemberModal(modalValue: ModalCloseValue<string>) {
-        this.showNewMemberModal = false;
-        if (modalValue.action === 'ok' && modalValue.value && this.project && this.project.id) {
-            const newMembers = this.membersList.map(item => item.member).concat([modalValue.value]);
-            const result = await this.projectService.updateProject({ members: newMembers }, this.project.id);
+    async onCloseDeleteMembersConfirmModal(modalValue: ModalCloseValue<any>) {
+        this.showConfirmModalDeleteMembers = false;
+        const membersSelected = this.membersList.filter(item => item.selected);
+        if (modalValue.action !== 'ok' || membersSelected.length === 0 || !this.project || !this.project.id) return;
 
-            if (result instanceof Error) {
-                this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
-            } else {
-                this.alertController.showAlert(this.containerRef, 'Miembro agregado con exito', 'success', 2000);
-                this.membersList.push({ selected: false, member: modalValue.value });
-                this.project.members.push(modalValue.value);
+        const newMembers = this.membersList.filter(item => !item.selected);
+        const deletedMembers = this.membersList.filter(item => item.selected);
+        const result = await this.projectMembersService.deleteMembers(newMembers.map(item => item.member), deletedMembers.map(item => item.member), this.project.id);
+        if (result instanceof Error) {
+            this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
+            return;
+        }
+
+        this.alertController.showAlert(this.containerRef, 'Miembro(s) eliminado(s) con exito', 'success', 2000);
+        this.memberActionButtonsState = {
+            disabledEdit: true,
+            disabledDelete: true,
+            disabledNew: false
+        };
+        for (const item of this.projectTasksList) {
+            if (item.task.owner && deletedMembers.map(item => item.member).includes(item.task.owner)) {
+                item.task.owner = null;
             }
         }
+        this.generalMembersCheckValue = false;
+        this.membersList.length = 0;
+        this.membersList = newMembers;
+        this.project.members.length = 0;
+        this.project.members = newMembers.map(item => item.member);
     }
 
 }
