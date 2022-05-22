@@ -1,4 +1,4 @@
-<div class="flex pt-8 px-2 justify-center gap-4 items-center">
+<div class="flex pt-8 pb-8 px-2 justify-center gap-4 items-center">
     <div id="options-bar" class="flex flex-wrap gap-4 justify-evenly p-2 rounded-xl">
 
         <div class="flex flex-wrap gap-4 justify-evenly">
@@ -58,7 +58,7 @@
     </div>
 </div>
 
-<div *ngIf="!loadingProjects" class="pt-8 pb-16 px-4 sm:px-10">
+<div *ngIf="!loadingProjects" class="pb-16 px-4 sm:px-10">
 
     <div class="flex flex-wrap justify-evenly gap-6">
 
@@ -81,6 +81,12 @@
             </div>
         </div>
 
+    </div>
+
+    <div *ngIf="projects?.length === 0" class="flex gap-6 py-4 px-4 sm:px-16 flex-wrap justify-evenly">
+        <div class="flex bg-base-100 shadow p-4 items-center justify-center sm:w-96 w-10/12 rounded-lg">
+            <span class="text-base-content text-center text-lg font-bold">No se encontraron proyectos</span>
+        </div>
     </div>
 </div>
 
