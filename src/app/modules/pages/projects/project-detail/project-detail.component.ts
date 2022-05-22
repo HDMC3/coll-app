@@ -6,6 +6,7 @@ import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.inter
 import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
+import { ProjectMembersService } from 'src/app/core/services/project-members.service';
 import { ProjectTasksService } from 'src/app/core/services/project-tasks.service';
 import { ProjectsService } from 'src/app/core/services/projects.service';
 
@@ -53,6 +54,7 @@ export class ProjectDetailComponent implements OnInit {
         private activateRoute: ActivatedRoute,
         private projectService: ProjectsService,
         private projectTasksService: ProjectTasksService,
+        private projectMembersService: ProjectMembersService,
         private alertController: AlertControllerService,
         private containerRef: ViewContainerRef
     ) {
@@ -214,7 +216,7 @@ export class ProjectDetailComponent implements OnInit {
 
         const newMembers = this.membersList.filter(item => !item.selected);
         const deletedMembers = this.membersList.filter(item => item.selected);
-        const result = await this.projectService.deleteMembers(newMembers.map(item => item.member), deletedMembers.map(item => item.member), this.project.id);
+        const result = await this.projectMembersService.deleteMembers(newMembers.map(item => item.member), deletedMembers.map(item => item.member), this.project.id);
         if (result instanceof Error) {
             this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
             return;
@@ -261,7 +263,7 @@ export class ProjectDetailComponent implements OnInit {
             return item.member;
         });
 
-        const result = await this.projectService.editMember(newMembers, modalValue.value, oldMemberValue, this.project.id);
+        const result = await this.projectMembersService.editMember(newMembers, modalValue.value, oldMemberValue, this.project.id);
         if (result instanceof Error) {
             this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
             return;
