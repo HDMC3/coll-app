@@ -210,6 +210,7 @@ export class TasksComponent implements OnInit {
             this.taskSelectedToEdit?.completed !== modalValue.value.changeValues.completed) {
             this.getCurrentTaskPage(this.taskItemEdited);
         }
+        this.taskItemEdited.loading = false;
     }
 
     async deleteTask(taskItem: { loading: boolean, task: Task }) {
