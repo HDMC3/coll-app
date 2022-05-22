@@ -76,8 +76,7 @@ export class ProjectsComponent implements OnInit {
                         this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_COMPLETED ||
                         this.filterOptionSelected.value === ProjectFilterOptionValues.COLLAB_IN_PROGRESS;
                 },
-                error: err => {
-                    console.log(err);
+                error: _ => {
                     this.alertService.showAlert(this.containerRef, 'Problema al obtener los proyectos', 'error', 3000);
                     this.loadingProjects = false;
                     this.disableNextButton = true;
