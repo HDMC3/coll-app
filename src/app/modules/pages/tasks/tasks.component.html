@@ -77,7 +77,8 @@
                 </div>
             </div>
             <div class="divider my-0"></div>
-            <p class="overflow-hidden">{{ item.task.description | maxLength }}</p>
+            <p *ngIf="!emptyDescription(item.task.description)" class="overflow-hidden">{{ item.task.description | maxLength }}</p>
+            <p *ngIf="emptyDescription(item.task.description)" class="text-base-content opacity-70">- Sin descripcion -</p>
             <div class="card-options flex gap-2 justify-end sm:justify-end pt-4 flex-wrap">
                 <button class="btn btn-outline btn-sm opacity-70 transition-all px-2" [disabled]="item.loading" (click)="deleteTask(item)">
                     <svg class="w-5 h-6" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">

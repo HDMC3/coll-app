@@ -262,4 +262,8 @@ export class TasksComponent implements OnInit {
         this.showTaskDetailModal = false;
     }
 
+    emptyDescription(description: string) {
+        return description.replace(/\s/g, '').length === 0;
+    }
+
 }
