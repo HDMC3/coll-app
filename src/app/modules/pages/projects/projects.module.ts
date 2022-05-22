@@ -14,6 +14,7 @@ import { NewProjectTaskModalComponent } from './components/new-project-task-moda
 import { EditProjectTaskModalComponent } from './components/edit-project-task-modal/edit-project-task-modal.component';
 import { ProjectDetailMemberComponent } from './project-detail-member/project-detail-member.component';
 import { EditProjectModalComponent } from './components/edit-project-modal/edit-project-modal.component';
+import { ProjectMembersListComponent } from './components/project-members-list/project-members-list.component';
 
 registerLocaleData(localeES, 'es-GT');
 
@@ -27,7 +28,8 @@ registerLocaleData(localeES, 'es-GT');
         NewProjectTaskModalComponent,
         EditProjectTaskModalComponent,
         ProjectDetailMemberComponent,
-        EditProjectModalComponent
+        EditProjectModalComponent,
+        ProjectMembersListComponent
     ],
     imports: [
         CommonModule,
