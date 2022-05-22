@@ -8,6 +8,7 @@ import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { ProjectTasksService } from 'src/app/core/services/project-tasks.service';
 import { ProjectsService } from 'src/app/core/services/projects.service';
 
 @Component({
@@ -27,6 +28,7 @@ export class ProjectDetailMemberComponent implements OnInit {
     constructor(
         private activateRoute: ActivatedRoute,
         private projectService: ProjectsService,
+        private projectTasksService: ProjectTasksService,
         private authService: AuthService,
         private alertController: AlertControllerService,
         private containerRef: ViewContainerRef
@@ -86,7 +88,7 @@ export class ProjectDetailMemberComponent implements OnInit {
     }
 
     getTasksProject$(projectId: string) {
-        return this.projectService.getProjectTasks(projectId)
+        return this.projectTasksService.getProjectTasks(projectId)
             .pipe(take(1));
     }
 
@@ -119,7 +121,7 @@ export class ProjectDetailMemberComponent implements OnInit {
             completation_date: completed ? Timestamp.now() : null
         };
         btnRef.disabled = true;
-        const result = await this.projectService.updateProjectTask(taskUpdated, this.project?.id);
+        const result = await this.projectTasksService.updateProjectTask(taskUpdated, this.project?.id);
         if (result instanceof Error) {
             this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
             return;

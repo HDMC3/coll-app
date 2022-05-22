@@ -6,6 +6,7 @@ import { ModalCloseValue } from 'src/app/core/interfaces/modal-close-value.inter
 import { ProjectTask } from 'src/app/core/interfaces/project-task.interface';
 import { Project } from 'src/app/core/interfaces/project.interface';
 import { AlertControllerService } from 'src/app/core/services/alert-controller.service';
+import { ProjectTasksService } from 'src/app/core/services/project-tasks.service';
 import { ProjectsService } from 'src/app/core/services/projects.service';
 
 @Component({
@@ -51,6 +52,7 @@ export class ProjectDetailComponent implements OnInit {
     constructor(
         private activateRoute: ActivatedRoute,
         private projectService: ProjectsService,
+        private projectTasksService: ProjectTasksService,
         private alertController: AlertControllerService,
         private containerRef: ViewContainerRef
     ) {
@@ -116,7 +118,7 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     getTasksProject$(projectId: string) {
-        return this.projectService.getProjectTasks(projectId)
+        return this.projectTasksService.getProjectTasks(projectId)
             .pipe(take(1));
     }
 
@@ -293,7 +295,7 @@ export class ProjectDetailComponent implements OnInit {
         this.showNewProjectTaskModal = false;
         if (modalValue.action !== 'ok' || !modalValue.value || !this.project || !this.project.id) return;
         modalValue.value.project_id = this.project.id;
-        const result = await this.projectService.saveNewProjectTask(modalValue.value, this.project.id);
+        const result = await this.projectTasksService.saveNewProjectTask(modalValue.value, this.project.id);
 
         if (result instanceof Error) {
             this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
@@ -320,7 +322,7 @@ export class ProjectDetailComponent implements OnInit {
         for (const item of projectTasksSelected) {
             if (item.task.id) projectTaskIds.push(item.task.id);
         }
-        const result = await this.projectService.deleteProjectTasks(projectTaskIds, this.project.id);
+        const result = await this.projectTasksService.deleteProjectTasks(projectTaskIds, this.project.id);
 
         if (result instanceof Error) {
             this.alertController.showAlert(this.containerRef, result.message, 'error', 3000); return;
@@ -352,7 +354,7 @@ export class ProjectDetailComponent implements OnInit {
         const projectTasksSelected = this.projectTasksList.filter(item => item.selected);
         if (modalValue.action !== 'ok' || !modalValue.value || projectTasksSelected.length !== 1 || !this.project || !this.project.id) return;
 
-        const result = await this.projectService.updateProjectTask(modalValue.value, this.project.id);
+        const result = await this.projectTasksService.updateProjectTask(modalValue.value, this.project.id);
         if (result instanceof Error) {
             this.alertController.showAlert(this.containerRef, result.message, 'error', 3000);
             return;

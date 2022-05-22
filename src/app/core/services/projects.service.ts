@@ -7,7 +7,6 @@ import { ProjectFilterOptionValues, SortOptionsValues } from '../enums';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { Project } from '../interfaces/project.interface';
-import { ProjectTask } from '../interfaces/project-task.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -95,23 +94,6 @@ export class ProjectsService {
         );
     }
 
-    getProjectTasks(projectId: string) {
-        return this.firestore.collection<ProjectTask>(
-            `projects/${projectId}/project_tasks`,
-            ref => ref.orderBy('creation_date', 'desc')
-        ).get().pipe(
-            map(snap => {
-                const projectTasks: ProjectTask[] = snap.docs.map(doc => {
-                    return {
-                        ...doc.data() as any,
-                        id: doc.id
-                    };
-                });
-                return projectTasks;
-            })
-        );
-    }
-
     async saveProject(project: Project) {
         try {
             const result = await this.firestore.collection<Project>('projects').add(project);
@@ -190,55 +172,6 @@ export class ProjectsService {
             }
 
             return new Error('Problema al guardar los cambios');
-        }
-    }
-
-    async saveNewProjectTask(projectTask: ProjectTask, projectId: string) {
-        try {
-            const result = await this.firestore.collection<ProjectTask>(`projects/${projectId}/project_tasks`).add(projectTask);
-            return result;
-        } catch (error) {
-            if (error instanceof Error) {
-                return error;
-            }
-            return new Error('Problema al guardar la tarea');
-        }
-    }
-
-    async deleteProjectTasks(projectTaskIds: string[], projectId: string) {
-        try {
-            return await this.firestore.firestore.runTransaction(async trans => {
-                try {
-                    for (const taskId of projectTaskIds) {
-                        trans.delete(this.firestore.doc<ProjectTask>(`projects/${projectId}/project_tasks/${taskId}`).ref);
-                    }
-                    return projectId;
-                } catch (error) {
-                    if (error instanceof Error) {
-                        return error;
-                    }
-                    return new Error('Problema al eliminar tareas');
-                }
-            });
-        } catch (error) {
-            if (error instanceof Error) {
-                return error;
-            }
-            return new Error('Problema al eliminar tareas');
-        }
-    }
-
-    async updateProjectTask(projectTask: Partial<ProjectTask>, projectId: string) {
-        try {
-            if (!projectTask.id) {
-                throw new Error('La tarea no existe');
-            }
-
-            await this.firestore.doc(`projects/${projectId}/project_tasks/${projectTask.id}`).update(projectTask);
-            return projectTask.id;
-        } catch (error) {
-            if (error instanceof Error) return error;
-            return new Error('Problema al guardar cambios');
         }
     }
 
