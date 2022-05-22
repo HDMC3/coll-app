@@ -23,6 +23,9 @@
                             type="password" placeholder="Ingresa tu contraseña.." class="input input-bordered">
                         <span *ngIf="checkControlInvalid('password')"
                             class="invalid text-xs pt-2">{{passwordMessageError}}</span>
+                        <label class="label">
+                            <a [routerLink]="['/auth', 'reset-password']" class="label-text-alt link link-hover">Olvidaste tu contraseña?</a>
+                        </label>
                     </div>
                     <div class="form-control mt-6">
                         <button (click)="login()" [disabled]="disableLoginButton" type="submit"

@@ -20,6 +20,12 @@ export class AuthService {
         return this.auth.createUserWithEmailAndPassword(email, password);
     }
 
+    sendResetPasswordEmail(email: string) {
+        return this.auth.sendPasswordResetEmail(email, {
+            url: 'http://localhost:4200/auth/login'
+        });
+    }
+
     get currentUser() {
         return this.auth.user;
     }

@@ -3,6 +3,7 @@ import { AngularFireAuthGuard, redirectLoggedInTo } from '@angular/fire/compat/a
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 const redirectLoggedInToTasks = () => redirectLoggedInTo(['app', 'tasks']);
 
@@ -15,7 +16,15 @@ const routes: Routes = [
     },
     {
         path: 'register',
-        component: RegisterComponent
+        component: RegisterComponent,
+        canActivate: [AngularFireAuthGuard],
+        data: { authGuardPipe: redirectLoggedInToTasks }
+    },
+    {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        canActivate: [AngularFireAuthGuard],
+        data: { authGuardPipe: redirectLoggedInToTasks }
     },
     {
         path: '',
