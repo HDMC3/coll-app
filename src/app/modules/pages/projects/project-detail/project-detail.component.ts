@@ -142,8 +142,8 @@ export class ProjectDetailComponent implements OnInit {
 
     onGeneralMembersCheckChange(enabled: boolean) {
         this.memberActionButtonsState = {
-            disabledEdit: !enabled || (enabled && this.membersList.length > 1),
-            disabledDelete: !enabled,
+            disabledEdit: !enabled || (enabled && this.membersList.length > 1) || (enabled && this.membersList.length === 0),
+            disabledDelete: !enabled || (enabled && this.membersList.length === 0),
             disabledNew: false
         };
 
@@ -154,8 +154,8 @@ export class ProjectDetailComponent implements OnInit {
 
     onGeneralTasksCheckChange(enabled: boolean) {
         this.taskActionButtonsState = {
-            disabledEdit: !enabled || (enabled && this.projectTasksList.length > 1),
-            disabledDelete: !enabled,
+            disabledEdit: !enabled || (enabled && this.projectTasksList.length > 1) || (enabled && this.projectTasksList.length === 0),
+            disabledDelete: !enabled || (enabled && this.projectTasksList.length === 0),
             disabledNew: false
         };
 
