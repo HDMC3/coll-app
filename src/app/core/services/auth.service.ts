@@ -22,7 +22,7 @@ export class AuthService {
 
     sendResetPasswordEmail(email: string) {
         return this.auth.sendPasswordResetEmail(email, {
-            url: 'http://localhost:4200/auth/login'
+            url: 'https://coll-app.netlify.app'
         });
     }
 
